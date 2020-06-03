@@ -91,6 +91,7 @@ namespace HelloMonoGame
 
             // add the updated one.
             vb = new VertexBuffer(Graphics.GraphicsDevice, typeof(VertexPositionColor), renderable.Mesh.Count(), BufferUsage.WriteOnly);
+            vb.Tag = tag;
             vb.SetData(renderable.Mesh);
             RenderList.Add(vb);
         }

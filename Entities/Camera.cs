@@ -65,18 +65,11 @@ namespace HelloMonoGame.Entities
                 First = true;
             }
 
-            var m = Mouse.GetState();
+            
 
-            if (m.LeftButton == ButtonState.Pressed && pressed == false)
-            {
-                Raycast(25f);
-                pressed = true;
-            }
-            else if(m.LeftButton == ButtonState.Released && pressed == true)
-            {
-                pressed = false;
-            }
-                
+           
+            Raycast(25f);
+            
 
             this.Right = Vector3.Normalize(Vector3.Cross(Up, Direction));
             this.View = Matrix.CreateLookAt(Position, Position + Direction, Up);
@@ -84,21 +77,27 @@ namespace HelloMonoGame.Entities
 
         private void Raycast(float length)
         {
+            var m = Mouse.GetState();
             Vector3 startPoint = Position;
             Vector3 endPoint = Position + (Direction * length);
 
-            for (int i = 0; i < length; i++)
+            for (int i = 0; i < length * 4; i++)
             {
-                Vector3 current = Vector3.Lerp(startPoint, endPoint, i / (length));
+                Vector3 current = Vector3.Lerp(startPoint, endPoint, (i / 4f) / (length));
 
                 // Check collision
-                if (ChunkManager.CheckCollision(current))
+                if (ChunkManager.CheckCollision(current) && m.LeftButton == ButtonState.Pressed && pressed == false)
                 {
                     Renderer.AddDebugLine(new DebugLine(startPoint, current, Color.Red));
                     ChunkManager.RemoveBlock(current);
-                    Renderer.AddDebugHit(new DebugHit(current, Color.Blue));
-                    Console.WriteLine("Collision made at: " + current);
+                    //Renderer.AddDebugHit(new DebugHit(current, Color.Blue));
+                    //Console.WriteLine("Collision made at: " + current);
+                    pressed = true;
                     return;
+                }
+                else if(m.LeftButton == ButtonState.Released && pressed == true)
+                {
+                    pressed = false;
                 }
             }
         }

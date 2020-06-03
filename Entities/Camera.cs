@@ -1,4 +1,5 @@
 ﻿using HelloMonoGame.Chunk;
+using HelloMonoGame.Entities.Collision;
 using HelloMonoGame.Graphics.Debug;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -34,9 +35,14 @@ namespace HelloMonoGame.Entities
 
         public float Sensitivity { get; set; } = 0.25f;
         public float MoveSpeed { get; set; } = 0.3f;
+        public float Gravity { get; set; } = 0.02f;
 
         public bool pressed = false;
         public Vector3 SelectVoxel { get; set; } = new Vector3();
+
+        public bool IsFlying = true;
+        public float Height = 6f;
+        public Raycast GroundRay;
 
         public Camera(Vector3 Position, Vector3 Target, Vector3 Up)
         {
@@ -48,6 +54,7 @@ namespace HelloMonoGame.Entities
             this.Up = Vector3.Normalize(Vector3.Cross(this.Direction, this.Right));
 
             this.View = Matrix.CreateLookAt(Position, Target, Up);
+            GroundRay = new Raycast(Position, Position + Vector3.Down * Height);
 
         }
 
@@ -57,7 +64,7 @@ namespace HelloMonoGame.Entities
         {
             if (Game1.Instance.IsActive)
             {
-                KeyboardControl();
+                
                 MouseControl();
             }
             else
@@ -65,17 +72,41 @@ namespace HelloMonoGame.Entities
                 First = true;
             }
 
-            
+            var kb = Keyboard.GetState();
+            if (kb.IsKeyDown(Keys.C))
+                IsFlying = !IsFlying;
+
+            if (!IsFlying)
+            {
+                GroundRay.Start = Position;
+                GroundRay.End = Position - new Vector3(0, Height, 0);
+                CollisionResult? result = CollisionHelper.IsCollidingWithWorld(GroundRay);
+                if(result != null)
+                {
+                    if(Position.Y - Height <= result.Value.VoxelPosition.Y)
+                        Position = new Vector3(Position.X, result.Value.GlobalPosition.Y + Height - 0.01f, Position.Z);
+                }
+                else
+                {
+                    Position = Position - new Vector3(0, Gravity * delta, 0);
+                }
+                KeyboardControlGround();
+            }
+            else
+            {
+                KeyboardControl();
+            }
 
            
-            Raycast(25f);
+            DestroyRaycast(25f);
             
 
             this.Right = Vector3.Normalize(Vector3.Cross(Up, Direction));
             this.View = Matrix.CreateLookAt(Position, Position + Direction, Up);
         }
 
-        private void Raycast(float length)
+        
+        private void DestroyRaycast(float length)
         {
             var m = Mouse.GetState();
             Vector3 startPoint = Position;
@@ -132,6 +163,27 @@ namespace HelloMonoGame.Entities
                 Position -= Up * speed;
         }
 
+        private void KeyboardControlGround()
+        {
+            var speed = 0.25f;
+
+            var nd = new Vector3(Direction.X, 0, Direction.Z);
+            // movement
+            var keyboard = Keyboard.GetState();
+            if (keyboard.IsKeyDown(Keys.W))
+                Position += speed * nd;
+            if (keyboard.IsKeyDown(Keys.S))
+                Position -= speed * nd;
+            if (keyboard.IsKeyDown(Keys.A))
+                Position += speed * Right;
+            if (keyboard.IsKeyDown(Keys.D))
+                Position -= speed * Right;
+            if (keyboard.IsKeyDown(Keys.Space))
+                Position += Up * speed;
+            if (keyboard.IsKeyDown(Keys.LeftShift))
+                Position -= Up * speed;
+        }
+
 
         private void MouseControl()
         {
@@ -149,8 +201,20 @@ namespace HelloMonoGame.Entities
             xOffset *= Sensitivity;
             yOffset *= Sensitivity;
 
+            if (Pitch - yOffset < -89)
+            {
+                Pitch = -89;
+                yOffset = 0;
+            }
+                
+            if (Pitch - yOffset > 89)
+            {
+                Pitch = 89;
+                yOffset = 0;
+            }
+
             Yaw += xOffset;
-            Pitch += yOffset;
+            Pitch -= yOffset;
 
             float radYaw = MathHelper.ToRadians(Yaw);
             float radPitch = MathHelper.ToRadians(Pitch);

@@ -1,4 +1,5 @@
 ﻿using HelloMonoGame.Entities;
+using HelloMonoGame.Entities.Collision;
 using HelloMonoGame.Graphics.Debug;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -45,6 +46,65 @@ namespace HelloMonoGame.Chunk
             Noise.SetFractalGain(0.5f);
             
         }
+
+
+        public static CollisionResult? RaycastCollision( Raycast ray) 
+        {
+            Vector3 startPoint = ray.Start;
+            Vector3 endPoint = ray.End;
+            float length = Vector3.Distance(startPoint, endPoint);
+
+            for (int i = 0; i < length * 8; i++)
+            {
+                Vector3 point = Vector3.Lerp(startPoint, endPoint, (i / 8f) / (length));
+                Vector2 chunkPosition = new Vector2((int)point.X / 16, (int)point.Z / 16);
+                Vector3 localPosition = new Vector3((int)point.X - (chunkPosition.X * 16),
+                                                    (int)point.Y,
+                                                    (int)point.Z - (chunkPosition.Y * 16));
+
+                // Offset
+                localPosition += new Vector3(0.5f, 0.5f, 0.5f);
+
+                Vector3 chunkPos3 = new Vector3(chunkPosition.X, 0, chunkPosition.Y);
+
+                if (localPosition.Y > 255 || localPosition.Y < 0)
+                    return null;
+
+                if (point.X < 0)
+                {
+                    if (point.X % 16 != 0)
+                        chunkPosition.X = (int)point.X / 16 - 1;
+
+                    localPosition.X = point.X - (16 * chunkPosition.X);
+                }
+                if (point.Z < 0)
+                {
+                    if (point.Z % 16 != 0)
+                        chunkPosition.Y = (int)point.Z / 16 - 1;
+
+                    localPosition.Z = point.Z - (16 * chunkPosition.Y);
+                }
+
+                if (IsChunkLoaded(chunkPosition))
+                {
+                    Chunk chunk = LoadedChunks[chunkPosition];
+
+                    // Collision!
+                    Blocks blockType = chunk.GetBlock(localPosition);
+                    if (blockType != Blocks.Air) 
+                    { 
+                        CollisionResult result = new CollisionResult()
+                        {
+                            GlobalPosition = point,
+                            VoxelPosition = localPosition + (chunkPos3 * 16),
+                            BlockType = blockType
+                        };
+                        return result;
+                    }
+                }
+            }
+            return null;
+        } 
 
         public static bool CheckCollision(Vector3 point)
         {
@@ -118,7 +178,6 @@ namespace HelloMonoGame.Chunk
             {
                 Chunk chunk = LoadedChunks[chunkPosition];
                 chunk.RemoveBlock(localPosition);
-                //Renderer.AddDebugBox(new DebugBox(new Vector3((int)point.X + 0.5f, (int)point.Y + 0.5f, (int)point.Z + 0.5f) , Color.Purple));
             }
         }
 

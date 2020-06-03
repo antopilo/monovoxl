@@ -58,6 +58,7 @@
     <Compile Include="Chunk\ChunkMesher.cs" />
     <Compile Include="Chunk\SubChunk.cs" />
     <Compile Include="Entities\Camera.cs" />
+    <Compile Include="Entities\Collision\Raycast.cs" />
     <Compile Include="Entities\Collision\CollisionHelper.cs" />
     <Compile Include="Entities\Collision\ICollidable.cs" />
     <Compile Include="Entities\IEntity.cs" />

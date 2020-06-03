@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HelloMonoGame.Chunk;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,13 @@ using System.Threading.Tasks;
 
 namespace HelloMonoGame.Entities.Collision
 {
+    public struct CollisionResult
+    {
+        public Vector3 GlobalPosition;
+        public Vector3 VoxelPosition;
+        public Blocks  BlockType;
+    }
+
     public static class CollisionHelper
     {
         public static bool BoxIntersect(BoundingBox a, BoundingBox b)
@@ -21,6 +29,11 @@ namespace HelloMonoGame.Entities.Collision
             return (point.X >= box.Min.X && point.X <= box.Max.X) &&
                    (point.Y >= box.Min.Y && point.Y <= box.Max.Y) &&
                    (point.Z >= box.Min.Z && point.Z <= box.Max.Z);
+        }
+
+        public static CollisionResult? IsCollidingWithWorld(Raycast ray)
+        {
+            return ChunkManager.RaycastCollision(ray);
         }
     }
 }

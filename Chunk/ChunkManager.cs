@@ -60,8 +60,7 @@ namespace HelloMonoGame.Chunk
 
 
             var m = Mouse.GetState();
-            if(m.LeftButton == ButtonState.Pressed)
-                Renderer.AddDebugBox(new DebugBox(localPosition + (chunkPos3 * 16), Color.Pink));
+           
 
             if (localPosition.Y > 255 || localPosition.Y < 0)
                 return false;
@@ -69,14 +68,14 @@ namespace HelloMonoGame.Chunk
             if (point.X < 0)
             {
                 if (point.X % 16 != 0)
-                    chunkPosition.X = point.X / 16 - 1;
+                    chunkPosition.X = (int)point.X / 16 - 1;
 
                 localPosition.X = point.X - (16 * chunkPosition.X);
             }
             if (point.Z < 0)
             {
                 if (point.Z % 16 != 0)
-                    chunkPosition.Y = point.Z / 16 - 1;
+                    chunkPosition.Y = (int)point.Z / 16 - 1;
 
                 localPosition.Z = point.Z - (16 * chunkPosition.Y);
             }
@@ -103,14 +102,14 @@ namespace HelloMonoGame.Chunk
             if (point.X < 0)
             {
                 if (point.X % 16 != 0)
-                    chunkPosition.X = point.X / 16 - 1;
+                    chunkPosition.X = (int)point.X / 16 - 1;
 
                 localPosition.X = point.X - (16 * chunkPosition.X);
             }
             if (point.Z < 0)
             {
                 if (point.Z % 16 != 0)
-                    chunkPosition.Y = point.Z / 16 - 1;
+                    chunkPosition.Y = (int)point.Z / 16 - 1;
 
                 localPosition.Z = point.Z - (16 * chunkPosition.Y);
             }
@@ -119,7 +118,7 @@ namespace HelloMonoGame.Chunk
             {
                 Chunk chunk = LoadedChunks[chunkPosition];
                 chunk.RemoveBlock(localPosition);
-                Renderer.AddDebugBox(new DebugBox(new Vector3((int)point.X + 0.5f, (int)point.Y + 0.5f, (int)point.Z + 0.5f) , Color.Purple));
+                //Renderer.AddDebugBox(new DebugBox(new Vector3((int)point.X + 0.5f, (int)point.Y + 0.5f, (int)point.Z + 0.5f) , Color.Purple));
             }
         }
 

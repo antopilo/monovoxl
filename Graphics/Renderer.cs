@@ -84,16 +84,13 @@ namespace HelloMonoGame
             // Check if not null
             if (vb is null)
                 return;
-
-            // remove
-            RenderList.Remove(vb);
-            vb.Dispose();
-
+            
             // add the updated one.
-            vb = new VertexBuffer(Graphics.GraphicsDevice, typeof(VertexPositionColor), renderable.Mesh.Count(), BufferUsage.WriteOnly);
-            vb.Tag = tag;
-            vb.SetData(renderable.Mesh);
-            RenderList.Add(vb);
+            var nvb = new VertexBuffer(Graphics.GraphicsDevice, typeof(VertexPositionColor), renderable.Mesh.Count(), BufferUsage.WriteOnly);
+            nvb.Tag = tag;
+            nvb.SetData(renderable.Mesh);
+
+            RenderList[RenderList.IndexOf(vb)] = nvb;
         }
 
 

@@ -94,6 +94,7 @@ namespace HelloMonoGame.Chunk
         public void RemoveBlock(Vector3 position) 
         {
             int x = (int)position.X, y = (int)position.Y, z = (int)position.Z;
+
             RemoveBlock(x, y, z);
         }
         public void RemoveBlock(int x, int y, int z)
@@ -101,6 +102,37 @@ namespace HelloMonoGame.Chunk
             // TODO: Check previous block before reducing count.
             Data[HashCoords(x, y, z)] = Blocks.Air;
             m_Count--;
+
+            if (x == 0)
+            {
+                Parent.Left.Changed = true;
+                Parent.Left.subChunks[Index].NeedRebuild = true;
+            }
+            else if (x == 15)
+            {
+                Parent.Right.Changed = true;
+                Parent.Right.subChunks[Index].NeedRebuild = true;
+            }
+            if (z == 0)
+            {
+                Parent.Back.Changed = true;
+                Parent.Back.subChunks[Index].NeedRebuild = true;
+            }
+            else if (z == 15)
+            {
+                Parent.Front.Changed = true;
+                Parent.Front.subChunks[Index].NeedRebuild = true;
+            } 
+            if (y == 0 && Index > 0)
+            {
+                GetUnderSubChunk().NeedRebuild = true;
+            }
+            else if (y == 15 && Index < 15)
+            {
+                GetAboveSubChunk().NeedRebuild = true;
+            }
+                
+
             NeedRebuild = true;
         }
 

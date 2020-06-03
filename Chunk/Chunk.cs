@@ -113,6 +113,11 @@ namespace HelloMonoGame.Chunk
                     Renderer.UpdateVertexBuffer(sc);
                 }
             }
+            for (int i = 0; i < HEIGHT; i++)
+            {
+                SubChunk sc = subChunks[i];
+                Renderer.UpdateVertexBuffer(sc);
+            }
             Changed = false;
         }
 

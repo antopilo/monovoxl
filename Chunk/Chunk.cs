@@ -17,6 +17,7 @@ namespace HelloMonoGame.Chunk
         public bool IsSurrounded = false;
         public bool IsGenerated = false;
         public bool IsMeshed = false;
+        public bool Changed = false;
 
         public string Name { get; set; }
         public Vector2 ChunkPosition { get; set; }
@@ -46,6 +47,21 @@ namespace HelloMonoGame.Chunk
             var localPosition = new Vector3(x, subChunkHeight, z);
 
             subChunks[subChunkIndex].AddBlock(localPosition, type);
+        }
+
+
+        public void RemoveBlock(Vector3 position)
+        {
+            RemoveBlock((int)position.X, (int)position.Y, (int)position.Z);
+        }
+        public void RemoveBlock(int x, int y, int z)
+        {
+            int subChunkIndex = GetSubChunkIdFromHeight(y);
+            int subChunkHeight = y - ((int)16 * (subChunkIndex));
+            var localPosition = new Vector3(x, subChunkHeight, z);
+
+            subChunks[subChunkIndex].RemoveBlock(localPosition);
+            Changed = true;
         }
 
         public Blocks GetBlock(Vector3 pos)
@@ -82,6 +98,22 @@ namespace HelloMonoGame.Chunk
             }
 
             IsMeshed = true;
+            Changed = false;
+        }
+
+        public void Rebuild()
+        {
+            for (int i = 0; i < HEIGHT; i++)
+            {
+                SubChunk sc = subChunks[i];
+                if (sc.NeedRebuild)
+                {
+                    sc.Mesh = ChunkMesher.Mesh(sc);
+                    sc.NeedRebuild = false;
+                    Renderer.UpdateVertexBuffer(sc);
+                }
+            }
+            Changed = false;
         }
 
         public void SetPosition(int x, int y, int z)

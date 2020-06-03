@@ -86,6 +86,7 @@ namespace HelloMonoGame.Entities
                 // Check collision
                 if (ChunkManager.CheckCollision(current))
                 {
+                    ChunkManager.RemoveBlock(current);
                     Renderer.AddDebugHit(new DebugHit(current, Color.Blue));
                     Console.WriteLine("Collision made at: " + current);
                 }

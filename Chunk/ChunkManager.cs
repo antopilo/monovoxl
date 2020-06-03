@@ -51,6 +51,13 @@ namespace HelloMonoGame.Chunk
                                                 (int)point.Y, 
                                                 (int)point.Z - (chunkPosition.Y * 16));
 
+            // Offset
+            localPosition += new Vector3(0.5f, 0.5f, 0.5f);
+
+            Vector3 chunkPos3 = new Vector3(chunkPosition.X, 0, chunkPosition.Y);
+
+            Renderer.AddDebugHit(new DebugHit(localPosition + (chunkPos3 * 16), Color.Pink));
+
             if (localPosition.Y > 255 || localPosition.Y < 0)
                 return false;
 
@@ -78,6 +85,38 @@ namespace HelloMonoGame.Chunk
             return false;
         }
 
+        public static void RemoveBlock(Vector3 point) 
+        {
+            Vector2 chunkPosition = new Vector2((int)point.X / 16, (int)point.Z / 16);
+            Vector3 localPosition = new Vector3((int)point.X - (chunkPosition.X * 16),
+                                                (int)point.Y,
+                                                (int)point.Z - (chunkPosition.Y * 16));
+
+            if (localPosition.Y > 255 || localPosition.Y < 0)
+                return;
+
+            if (point.X < 0)
+            {
+                if (point.X % 16 != 0)
+                    chunkPosition.X = point.X / 16 - 1;
+
+                localPosition.X = point.X - (16 * chunkPosition.X);
+            }
+            if (point.Z < 0)
+            {
+                if (point.Z % 16 != 0)
+                    chunkPosition.Y = point.Z / 16 - 1;
+
+                localPosition.Z = point.Z - (16 * chunkPosition.Y);
+            }
+
+            if (IsChunkLoaded(chunkPosition))
+            {
+                Chunk chunk = LoadedChunks[chunkPosition];
+                chunk.RemoveBlock(localPosition);
+            }
+        }
+
         public static void AsyncUpdate()
         {
             while (true)
@@ -87,6 +126,7 @@ namespace HelloMonoGame.Chunk
                 Generate();
                 UpdateFlags();
                 Mesh();
+                CheckForRebuild();
             }
         }
 
@@ -98,6 +138,7 @@ namespace HelloMonoGame.Chunk
             Generate();
             UpdateFlags();
             Mesh();
+            CheckForRebuild();
         }
 
         /// <summary>
@@ -213,6 +254,18 @@ namespace HelloMonoGame.Chunk
                 chunk.Mesh();
                 chunk.QueueToRender();
                 counter++;
+            }
+        }
+
+        private static void CheckForRebuild()
+        {
+            int counter = 0;
+
+            foreach (Chunk chunk in LoadedChunks.Values.Where(c => c.Changed == true ).OrderBy(c => Vector3.Distance(c.Position, Camera.Position)))
+            {
+                if (counter > MAX_CHUNKS_PER_FRAME)
+                    return;
+                chunk.Rebuild();
             }
         }
 

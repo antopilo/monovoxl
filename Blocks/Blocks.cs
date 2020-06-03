@@ -31,12 +31,20 @@ public static class BlockManager
 
     public static Color GetBlockColor(Blocks type, int gx, int gz) 
     {
-        if (type == Blocks.Dirt)
-            return Color.SandyBrown;
-        if (type == Blocks.Grass)
-            return Color.Lerp(Color.GreenYellow, Color.Yellow, TemperatureMap.GetSimplexFractal(gx, gz));
-        if (type == Blocks.Stone)
-            return Color.SlateGray;
+        int cx = gx / 16;
+        int cz = gz / 16;
+        int x = gx - (16 * cx);
+        int z = gz - (16 * cz);
+
+        var xColor = Color.Lerp(Color.Red, Color.Blue, x / 16f);
+        return Color.Lerp(xColor, Color.Green, z / 16f);
+
+        //if (type == Blocks.Dirt)
+        //    return Color.SandyBrown;
+        //if (type == Blocks.Grass)
+        //    return Color.Lerp(Color.GreenYellow, Color.Yellow, TemperatureMap.GetSimplexFractal(gx, gz));
+        //if (type == Blocks.Stone)
+        //    return Color.SlateGray;
 
         return Color.SlateGray;
     }

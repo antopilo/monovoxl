@@ -12,6 +12,27 @@ using System.Threading.Tasks;
 
 namespace HelloMonoGame
 {
+    public struct DebugBox
+    {
+        public Vector3 Point;
+        public float Size;
+        public Color Color;
+
+        public DebugBox(Vector3 Point, float Size, Color color)
+        {
+            this.Point = Point;
+            this.Size = Size;
+            this.Color = color;
+        }
+
+        public DebugBox(Vector3 Point, Color color)
+        {
+            this.Point = Point;
+            this.Size = 1f;
+            this.Color = color;
+        }
+    }
+
     public struct DebugLine
     {
         public Vector3 Start;
@@ -49,6 +70,7 @@ namespace HelloMonoGame
         public static List<VertexBuffer> RenderList;
         public static List<DebugLine> DebugList;
         public static List<DebugHit> DebugHit;
+        public static List<DebugBox> DebugBoxes;
 
         /// <summary>
         /// Initialize
@@ -78,9 +100,44 @@ namespace HelloMonoGame
                 return;
 
             var vb = new VertexBuffer(Graphics.GraphicsDevice, typeof(VertexPositionColor), renderable.Mesh.Count(), BufferUsage.WriteOnly);
+
+            // Set Tag for updating.
+            if(renderable is SubChunk)
+            {
+                Chunk.Chunk c = ((SubChunk)renderable).Parent;
+                vb.Tag = new Vector3(c.ChunkPosition.X, ((SubChunk)renderable).Index, c.ChunkPosition.Y);
+            }
             
             vb.SetData<VertexPositionColor>(renderable.Mesh);
 
+            RenderList.Add(vb);
+        }
+
+
+        public static void UpdateVertexBuffer(IRenderable renderable)
+        {
+            // Set Tag for updating.
+            if (!(renderable is SubChunk))
+                return;
+
+            // Create new tag 
+            Chunk.Chunk c = ((SubChunk)renderable).Parent;
+            Vector3 tag = new Vector3(c.ChunkPosition.X, ((SubChunk)renderable).Index, c.ChunkPosition.Y);
+
+            // Find buffer to udpate
+            VertexBuffer vb = RenderList.SingleOrDefault(b => b.Tag != null && (Vector3)b.Tag == tag);
+
+            // Check if not null
+            if (vb is null)
+                return;
+
+            // remove
+            RenderList.Remove(vb);
+            vb.Dispose();
+
+            // add the updated one.
+            vb = new VertexBuffer(Graphics.GraphicsDevice, typeof(VertexPositionColor), renderable.Mesh.Count(), BufferUsage.WriteOnly);
+            vb.SetData(renderable.Mesh);
             RenderList.Add(vb);
         }
 
@@ -152,7 +209,7 @@ namespace HelloMonoGame
         public static void Draw(GameTime gameTime)
         {
             // Clear the screen.
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             // Draw everything in the render list.
             DrawMesh();

@@ -1,0 +1,11 @@
+F:\Desktop\xna\bin\Windows\x86\Debug\Content\Arial.xnb
+F:\Desktop\xna\bin\Windows\x86\Debug\HelloMonoGame.exe
+F:\Desktop\xna\bin\Windows\x86\Debug\HelloMonoGame.pdb
+F:\Desktop\xna\bin\Windows\x86\Debug\MonoGame.Framework.dll
+F:\Desktop\xna\bin\Windows\x86\Debug\MonoGame.Framework.xml
+F:\Desktop\xna\obj\x86\Debug\HelloMonoGame.csprojAssemblyReference.cache
+F:\Desktop\xna\obj\x86\Debug\HelloMonoGame.csproj.CoreCompileInputs.cache
+F:\Desktop\xna\obj\x86\Debug\HelloMonoGame.csproj.CopyComplete
+F:\Desktop\xna\obj\x86\Debug\HelloMonoGame.exe
+F:\Desktop\xna\obj\x86\Debug\HelloMonoGame.pdb
+F:\Desktop\xna\bin\Windows\x86\Debug\HelloMonoGame.exe.config

@@ -1,4 +1,5 @@
 ﻿using HelloMonoGame.Entities;
+using HelloMonoGame.Graphics.Debug;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -56,7 +57,7 @@ namespace HelloMonoGame.Chunk
 
             Vector3 chunkPos3 = new Vector3(chunkPosition.X, 0, chunkPosition.Y);
 
-            Renderer.AddDebugHit(new DebugHit(localPosition + (chunkPos3 * 16), Color.Pink));
+            Renderer.AddDebugBox(new DebugBox(localPosition + (chunkPos3 * 16), Color.Pink));
 
             if (localPosition.Y > 255 || localPosition.Y < 0)
                 return false;
@@ -114,6 +115,7 @@ namespace HelloMonoGame.Chunk
             {
                 Chunk chunk = LoadedChunks[chunkPosition];
                 chunk.RemoveBlock(localPosition);
+                Renderer.AddDebugBox(new DebugBox(localPosition, Color.Purple));
             }
         }
 

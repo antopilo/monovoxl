@@ -1,4 +1,5 @@
 ﻿using HelloMonoGame.Chunk;
+using HelloMonoGame.Graphics.Debug;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -34,6 +35,7 @@ namespace HelloMonoGame.Entities
         public float Sensitivity { get; set; } = 0.25f;
         public float MoveSpeed { get; set; } = 0.3f;
 
+        public bool pressed = false;
         public Vector3 SelectVoxel { get; set; } = new Vector3();
 
         public Camera(Vector3 Position, Vector3 Target, Vector3 Up)
@@ -65,8 +67,16 @@ namespace HelloMonoGame.Entities
 
             var m = Mouse.GetState();
 
-            if(m.LeftButton == ButtonState.Pressed)
+            if (m.LeftButton == ButtonState.Pressed && pressed == false)
+            {
                 Raycast(25f);
+                pressed = true;
+            }
+            else if(m.LeftButton == ButtonState.Released && pressed == true)
+            {
+                pressed = false;
+            }
+                
 
             this.Right = Vector3.Normalize(Vector3.Cross(Up, Direction));
             this.View = Matrix.CreateLookAt(Position, Position + Direction, Up);
@@ -77,18 +87,18 @@ namespace HelloMonoGame.Entities
             Vector3 startPoint = Position;
             Vector3 endPoint = Position + (Direction * length);
 
-            Renderer.AddDebugLine(new DebugLine(startPoint, endPoint, Color.Red));
-
             for (int i = 0; i < length; i++)
             {
-                Vector3 current = Vector3.Lerp(startPoint, endPoint, i / (length * 2));
+                Vector3 current = Vector3.Lerp(startPoint, endPoint, i / (length));
 
                 // Check collision
                 if (ChunkManager.CheckCollision(current))
                 {
+                    Renderer.AddDebugLine(new DebugLine(startPoint, current, Color.Red));
                     ChunkManager.RemoveBlock(current);
                     Renderer.AddDebugHit(new DebugHit(current, Color.Blue));
                     Console.WriteLine("Collision made at: " + current);
+                    return;
                 }
             }
         }

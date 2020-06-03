@@ -1,5 +1,6 @@
 ﻿using HelloMonoGame.Chunk;
 using HelloMonoGame.Entities;
+using HelloMonoGame.Graphics.Debug;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -12,54 +13,6 @@ using System.Threading.Tasks;
 
 namespace HelloMonoGame
 {
-    public struct DebugBox
-    {
-        public Vector3 Point;
-        public float Size;
-        public Color Color;
-
-        public DebugBox(Vector3 Point, float Size, Color color)
-        {
-            this.Point = Point;
-            this.Size = Size;
-            this.Color = color;
-        }
-
-        public DebugBox(Vector3 Point, Color color)
-        {
-            this.Point = Point;
-            this.Size = 1f;
-            this.Color = color;
-        }
-    }
-
-    public struct DebugLine
-    {
-        public Vector3 Start;
-        public Vector3 End;
-        public Color Color;
-
-        public DebugLine(Vector3 start, Vector3 end, Color color)
-        {
-            this.Start = start;
-            this.End = end;
-            this.Color = color;
-        }
-    }
-
-    public struct DebugHit
-    {
-        public Vector3 Point;
-        public Color Color;
-
-        public DebugHit(Vector3 point, Color color) 
-        {
-            this.Point = point;
-            this.Color = color;
-        }
-    }
-
-
     public static class Renderer
     {
         public static GraphicsDeviceManager Graphics;
@@ -88,6 +41,7 @@ namespace HelloMonoGame
             RenderList = new List<VertexBuffer>();
             DebugList = new List<DebugLine>();
             DebugHit = new List<DebugHit>();
+            DebugBoxes = new List<DebugBox>();
         }
         
 
@@ -174,6 +128,11 @@ namespace HelloMonoGame
             DebugHit.Add(hit);
         }
 
+        public static void AddDebugBox(DebugBox box)
+        {
+            DebugBoxes.Add(box);
+        }
+
         public static void DrawDebug()
         {
             // Update view and projection with updated camera coordinates.
@@ -199,6 +158,52 @@ namespace HelloMonoGame
                     new VertexPositionColor(dh.Point + new Vector3(1, 0, 0), dh.Color),  new VertexPositionColor(dh.Point - new Vector3(1, 0, 0), dh.Color),
                 };
                 Graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, buffer, 0, 2);
+            }
+
+            for (int i = 0; i < DebugBoxes.Count; i++)
+            {
+                DebugBox db = DebugBoxes[i];
+                VertexPositionColor[] buffer = {
+                    // TOP
+                    new VertexPositionColor(db.Point + new Vector3(-0.5f, -0.5f, -0.5f), db.Color),
+                    new VertexPositionColor(db.Point + new Vector3(-0.5f, -0.5f, 0.5f), db.Color),
+
+                    new VertexPositionColor(db.Point + new Vector3(-0.5f, -0.5f, 0.5f), db.Color),
+                    new VertexPositionColor(db.Point + new Vector3(0.5f, -0.5f, 0.5f), db.Color),
+
+                    new VertexPositionColor(db.Point + new Vector3(0.5f, -0.5f, 0.5f), db.Color),
+                    new VertexPositionColor(db.Point + new Vector3(0.5f, -0.5f, -0.5f), db.Color),
+
+                    new VertexPositionColor(db.Point + new Vector3(0.5f, -0.5f, -0.5f), db.Color),
+                    new VertexPositionColor(db.Point + new Vector3(-0.5f, -0.5f, -0.5f), db.Color),
+
+                    // middle
+                    new VertexPositionColor(db.Point + new Vector3(-0.5f, -0.5f, -0.5f), db.Color),
+                    new VertexPositionColor(db.Point + new Vector3(-0.5f,  0.5f, -0.5f), db.Color),
+
+                    new VertexPositionColor(db.Point + new Vector3(-0.5f, -0.5f, 0.5f), db.Color),
+                    new VertexPositionColor(db.Point + new Vector3(-0.5f,  0.5f, 0.5f), db.Color),
+
+                    new VertexPositionColor(db.Point + new Vector3(0.5f, -0.5f, 0.5f), db.Color),
+                    new VertexPositionColor(db.Point + new Vector3(0.5f,  0.5f, 0.5f), db.Color),
+
+                    new VertexPositionColor(db.Point + new Vector3(0.5f, -0.5f, -0.5f), db.Color),
+                    new VertexPositionColor(db.Point + new Vector3(0.5f,  0.5f, -0.5f), db.Color),
+
+                    // bottom
+                    new VertexPositionColor(db.Point + new Vector3(-0.5f, 0.5f, -0.5f), db.Color),
+                    new VertexPositionColor(db.Point + new Vector3(-0.5f, 0.5f, 0.5f), db.Color),
+
+                    new VertexPositionColor(db.Point + new Vector3(-0.5f, 0.5f, 0.5f), db.Color),
+                    new VertexPositionColor(db.Point + new Vector3(0.5f,  0.5f, 0.5f), db.Color),
+
+                    new VertexPositionColor(db.Point + new Vector3(0.5f,  0.5f, 0.5f), db.Color),
+                    new VertexPositionColor(db.Point + new Vector3(0.5f,  0.5f, -0.5f), db.Color),
+
+                    new VertexPositionColor(db.Point + new Vector3(0.5f,  0.5f, -0.5f), db.Color),
+                    new VertexPositionColor(db.Point + new Vector3(-0.5f, 0.5f, -0.5f), db.Color),
+                };
+                Graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, buffer, 0, buffer.Count() / 2);
             }
         }
 

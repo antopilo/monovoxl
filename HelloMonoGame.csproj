@@ -65,6 +65,7 @@
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Generation\FastNoisecs.cs" />
+    <Compile Include="Generation\Generator.cs" />
     <Compile Include="Graphics\Debug\DebugBox.cs" />
     <Compile Include="Graphics\Debug\DebugHit.cs" />
     <Compile Include="Graphics\Debug\DebugLine.cs" />

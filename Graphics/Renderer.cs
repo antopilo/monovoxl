@@ -36,6 +36,10 @@ namespace HelloMonoGame
             // Default shader
             DefaultEffect = new BasicEffect(graphics.GraphicsDevice);
             DefaultEffect.VertexColorEnabled = true;
+            DefaultEffect.FogEnabled = true;
+            DefaultEffect.FogStart = 16 * ChunkManager.RENDER_DISTANCE - 16;
+            DefaultEffect.FogEnd = 16 * ChunkManager.RENDER_DISTANCE - 8;
+            DefaultEffect.FogColor = Color.CornflowerBlue.ToVector3();
             
             // Render list
             RenderList = new List<VertexBuffer>();
@@ -44,6 +48,12 @@ namespace HelloMonoGame
             DebugBoxes = new List<DebugBox>();
         }
         
+        public static void UpdateFog(float start, float end)
+        {
+            DefaultEffect.FogStart = start;
+            DefaultEffect.FogEnd = end;
+        }
+
 
         /// <summary>
         /// Add the renderable entity to the render list.
@@ -67,6 +77,27 @@ namespace HelloMonoGame
             RenderList.Add(vb);
         }
 
+        public static void RemoveVertexBuffer(IRenderable renderable)
+        {
+            // Set Tag for updating.
+            if (!(renderable is SubChunk))
+                return;
+
+            // Create new tag 
+            Chunk.Chunk c = ((SubChunk)renderable).Parent;
+            Vector3 tag = new Vector3(c.ChunkPosition.X, ((SubChunk)renderable).Index, c.ChunkPosition.Y);
+
+            // Find buffer to udpate
+            VertexBuffer vb = RenderList.SingleOrDefault(b => b.Tag != null && (Vector3)b.Tag == tag);
+
+            // Check if not null
+            if (vb is null)
+                return;
+
+            vb.Dispose();
+            RenderList.Remove(vb);
+
+        }
 
         public static void UpdateVertexBuffer(IRenderable renderable)
         {
@@ -212,7 +243,7 @@ namespace HelloMonoGame
         public static void Draw(GameTime gameTime)
         {
             // Clear the screen.
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // Draw everything in the render list.
             DrawMesh();

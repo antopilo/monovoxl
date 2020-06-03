@@ -19,7 +19,7 @@ public class Scene
 
     // Current camera
     public Camera CurrentCamera { get; set; }
-    public static Camera DefaultCamera = new Camera(new Vector3(0, 300, 0), new Vector3(1, 300, 0), Vector3.Up);
+    public static Camera DefaultCamera = new Camera(new Vector3(0, 100, 0), new Vector3(1, 100, 0), Vector3.Up);
 
     public static float DeltaTime = 0f;
     // Manage chunks
@@ -39,6 +39,7 @@ public class Scene
         CurrentCamera = DefaultCamera;
 
         ChunkManager.Initialize(CurrentCamera);
+        HelloMonoGame.Generation.Generator.Initialize(1337);
     }
 
     public void Update(float delta)

@@ -41,7 +41,7 @@ namespace HelloMonoGame.Entities
         public Vector3 SelectVoxel { get; set; } = new Vector3();
 
         public bool IsFlying = true;
-        public float Height = 6f;
+        public float Height = 2f;
         public Raycast GroundRay;
 
         public Camera(Vector3 Position, Vector3 Target, Vector3 Up)
@@ -165,7 +165,7 @@ namespace HelloMonoGame.Entities
 
         private void KeyboardControlGround()
         {
-            var speed = 0.25f;
+            var speed = 0.1f;
 
             var nd = new Vector3(Direction.X, 0, Direction.Z);
             // movement

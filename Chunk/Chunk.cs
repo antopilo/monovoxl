@@ -121,6 +121,23 @@ namespace HelloMonoGame.Chunk
             Changed = false;
         }
 
+        public void Unload()
+        {
+            if(Right != null)
+                Right.IsSurrounded = false;
+            if(Left != null)
+                Left.IsSurrounded = false;
+            if(Front != null)
+                Front.IsSurrounded = false;
+            if (Back != null)
+                Back.IsSurrounded = false;
+            
+            for (int i = 0; i < HEIGHT; i++)
+            {
+                SubChunk sc = subChunks[i];
+                Renderer.RemoveVertexBuffer(sc);
+            }
+        }
         public void SetPosition(int x, int y, int z)
         {
             this.Position = new Vector3(x, y, z);

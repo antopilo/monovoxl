@@ -39,12 +39,12 @@ public static class BlockManager
         //var xColor = Color.Lerp(Color.Red, Color.Blue, x / 16f);
         //return Color.Lerp(xColor, Color.Green, z / 16f);
 
-        if (type == Blocks.Dirt)
-            return Color.Lerp(Color.SandyBrown, Color.RosyBrown, TemperatureMap.GetSimplexFractal(gx, gz));
-        if (type == Blocks.Grass)
-            return Color.Lerp(Color.GreenYellow, Color.Yellow, TemperatureMap.GetSimplexFractal(gx, gz));
-        if (type == Blocks.Stone)
-            return Color.SlateGray;
+        //if (type == Blocks.Dirt)
+        //    return Color.Lerp(Color.SandyBrown, Color.RosyBrown, TemperatureMap.GetSimplexFractal(gx, gz));
+        //if (type == Blocks.Grass)
+        //    return Color.Lerp(Color.GreenYellow, Color.Yellow, TemperatureMap.GetSimplexFractal(gx, gz));
+        //if (type == Blocks.Stone)
+        //    return Color.SlateGray;
 
         return Color.SlateGray;
     }

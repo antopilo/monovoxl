@@ -200,21 +200,162 @@ namespace HelloMonoGame.Chunk
                         int left = ChunkManager.GetBlock(position + new Vector3(0, 1, 1)) == Blocks.Air ? 0 : 1;
                         int right = ChunkManager.GetBlock(position + new Vector3(-1, 1, 0)) == Blocks.Air ? 0 : 1;
                         color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
-                    }
+                    } 
                     break;
                 case CUBE_FACES.Bottom:
+                    if (vertex == 0) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(-1, 0, -1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(-1, 0, 0)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(0, 0, -1)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    if (vertex == 1) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(1, 0, -1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(0, 0, -1)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(1, 0, 0)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+            
+                    if (vertex == 3) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(-1, 0, 1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(0, 0, 1)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(-1, 0, 0)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    if (vertex == 2) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(1, 0, 1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(1, 0, 0)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(0, 0, 1)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);      
+                    }
                     break;
                 case CUBE_FACES.Left:
-                    color = Color.Lerp(color, Color.Black, 0.1f);
+                    if(vertex == 0) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(-1, 0, -1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(-1, 0, 0)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(0, 0, -1)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    if (vertex == 3) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(-1, 0, 1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(0, 0, 1)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(-1, 0, 0)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    if (vertex == 4) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(-1, 1, -1)) == Blocks.Air ? 0 : 1;
+                        int left =  ChunkManager.GetBlock(position + new Vector3(-1, 1, 0)) == Blocks.Air ? 0 :1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(0, 1, -1)) == Blocks.Air ? 0 :1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    if (vertex == 7) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(-1, 1, 1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(0, 1, 1)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(-1, 1, 0)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    //color = Color.Lerp(color, Color.Black, 0.1f);
                     break;
                 case CUBE_FACES.Right:
-                    color = Color.Lerp(color, Color.Black, 0.15f);
+                    if(vertex == 1) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(1, 0, -1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(0, 0, -1)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(1, 0, 0)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    if (vertex == 2) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(1, 0, 1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(1, 0, 0)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(0, 0, 1)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    if (vertex == 5) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(1, 1, -1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(0, 1, -1)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(1, 1, 0)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    if (vertex == 6) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(1, 1, 1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(1, 1, 0)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(0, 1, 1)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    //color = Color.Lerp(color, Color.Black, 0.15f);
                     break;
                 case CUBE_FACES.Front:
-                    color = Color.Lerp(color, Color.Black, 0.20f);
+                    if (vertex == 2) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(1, 0, 1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(1, 0, 0)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(0, 0, 1)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    if (vertex == 3) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(-1, 0, 1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(0, 0, 1)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(-1, 0, 0)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    if (vertex == 6) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(1, 1, 1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(1, 1, 0)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(0, 1, 1)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    if (vertex == 7) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(-1, 1, 1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(0, 1, 1)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(-1, 1, 0)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    //color = Color.Lerp(color, Color.Black, 0.20f);
                     break;
                 case CUBE_FACES.Back:
-                    color = Color.Lerp(color, Color.Black, 0.25f);
+                    if (vertex == 0) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(-1, 0, -1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(-1, 0, 0)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(0, 0, -1)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    if (vertex == 1) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(1, 0, -1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(0, 0, -1)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(1, 0, 0)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    if (vertex == 4) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(-1, 1, -1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(-1, 1, 0)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(0, 1, -1)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    if (vertex == 5) 
+                    {
+                        int corner = ChunkManager.GetBlock(position + new Vector3(1, 1, -1)) == Blocks.Air ? 0 : 1;
+                        int left = ChunkManager.GetBlock(position + new Vector3(0, 1, -1)) == Blocks.Air ? 0 : 1;
+                        int right = ChunkManager.GetBlock(position + new Vector3(1, 1, 0)) == Blocks.Air ? 0 : 1;
+                        color = Color.Lerp(color, Color.Black, VertexAO(left, right, corner) * 0.25f);
+                    }
+                    //color = Color.Lerp(color, Color.Black, 0.25f);
                     break;
                 default:
                     break;  

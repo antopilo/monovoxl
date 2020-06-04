@@ -41,7 +41,7 @@ namespace HelloMonoGame.Entities
         public Vector3 SelectVoxel { get; set; } = new Vector3();
 
         public bool IsFlying = true;
-        public float Height = 2f;
+        public float Height = 6f;
         public Raycast GroundRay;
 
         public Camera(Vector3 Position, Vector3 Target, Vector3 Up)

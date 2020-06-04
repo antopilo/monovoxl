@@ -237,6 +237,44 @@ namespace HelloMonoGame.Chunk
             return LoadedChunks[position];
         }
 
+        public static Blocks GetBlock(Vector3 pos)
+        {
+            return GetBlock((int)pos.X, (int)pos.Y, (int)pos.Z);
+        }
+
+        public static Blocks GetBlock(int x, int y, int z)
+        {
+            Vector2 chunkPosition = new Vector2(x / 16, (int)z / 16);
+            Vector3 localPosition = new Vector3(x - (chunkPosition.X * 16),
+                                                y,
+                                                z - (chunkPosition.Y * 16));
+
+            if (localPosition.Y > 255 || localPosition.Y < 0)
+                return Blocks.Air;
+
+            if (x < 0)
+            {
+                if (x % 16 != 0)
+                    chunkPosition.X = x / 16 - 1;
+
+                localPosition.X = x - (16 * chunkPosition.X);
+            }
+            if (z < 0)
+            {
+                if (z % 16 != 0)
+                    chunkPosition.Y = z / 16 - 1;
+
+                localPosition.Z = z - (16 * chunkPosition.Y);
+            }
+
+            if (IsChunkLoaded(chunkPosition))
+            {
+                Chunk chunk = LoadedChunks[chunkPosition];
+                return chunk.GetBlock(localPosition);
+            }
+            return Blocks.Air;
+        }
+
         public static void RemoveBlock(Vector3 point)
         {
             Vector2 chunkPosition = new Vector2((int)point.X / 16, (int)point.Z / 16);

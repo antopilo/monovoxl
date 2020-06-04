@@ -38,9 +38,10 @@ namespace HelloMonoGame.Chunk
 
         private static Random rng = new Random();
         
+        private static List<VertexPositionColor> CurrentArray;
         public static VertexPositionColor[] Mesh(SubChunk chunk)
         {
-            var array = new List<VertexPositionColor>();
+            CurrentArray = new List<VertexPositionColor>();
             for (int x = 0; x < 16; x++)
             {
                 for (int y = 0; y < 16; y++)
@@ -50,14 +51,14 @@ namespace HelloMonoGame.Chunk
                         if (chunk.GetBlock(x, y, z) == Blocks.Air)
                             continue;
 
-                        CreateBlock(x, y, z, chunk, array);
+                        CreateBlock(x, y, z, chunk);
                     }
                 }
             }
-            return array.ToArray();
+            return CurrentArray.ToArray();
         }
 
-        private static void CreateBlock(int x, int y, int z, SubChunk chunk, List<VertexPositionColor> array)
+        private static void CreateBlock(int x, int y, int z, SubChunk chunk)
         {
 
             var gp = new Vector3(chunk.Parent.Position.X + x, 16 * chunk.Index + y, chunk.Parent.Position.Z + z);
@@ -110,6 +111,9 @@ namespace HelloMonoGame.Chunk
                     bottomChunk = botSubChunk.GetBlock(x, 15, z) == Blocks.Air;
             }
 
+            if (!leftChunk && !rightChunk && !backChunk && !frontChunk && !topChunk && !bottomChunk)
+                return;
+
             // False if should not render chunk border faces.
             bool topBorder    = y == 15 ? topChunk    : top;
             bool bottomBorder = y == 0  ? bottomChunk : bottom;
@@ -121,77 +125,122 @@ namespace HelloMonoGame.Chunk
             Color color = BlockManager.GetBlockColor(chunk.GetBlock(x, y, z), (int)gx, (int)gz);
             if (topBorder)
             {
-                PushVertex(new Vector3(gx, gy, gz), 4, CUBE_FACES.Top, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 5, CUBE_FACES.Top, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 7, CUBE_FACES.Top, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 5, CUBE_FACES.Top, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 6, CUBE_FACES.Top, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 7, CUBE_FACES.Top, color, array);
+                // 00 10 01 11
+                PushQuad(gp, new Vector4(4, 5, 7, 6), color);
+                //PushTriangle(gp, new Vector3(4, 5, 7), color, array);
+                //PushTriangle(gp, new Vector3(5, 6, 7), color, array);
             }                                                          
             if (bottomBorder)                                                
-            {                                                          
-                PushVertex(new Vector3(gx, gy, gz), 1, CUBE_FACES.Bottom, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 3, CUBE_FACES.Bottom, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 2, CUBE_FACES.Bottom, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 1, CUBE_FACES.Bottom, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 0, CUBE_FACES.Bottom, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 3, CUBE_FACES.Bottom, color, array);
-            }                                                         
-            if (leftBorder)                                                 
-            {                                                         
-                PushVertex(new Vector3(gx, gy, gz), 0, CUBE_FACES.Left, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 7, CUBE_FACES.Left, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 3, CUBE_FACES.Left, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 0, CUBE_FACES.Left, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 4, CUBE_FACES.Left, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 7, CUBE_FACES.Left, color, array);
-            }                                                    
-            if (rightBorder)                                           
-            {                                                    
-                PushVertex(new Vector3(gx, gy, gz), 2, CUBE_FACES.Right, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 5, CUBE_FACES.Right, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 1, CUBE_FACES.Right, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 2, CUBE_FACES.Right, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 6, CUBE_FACES.Right, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 5, CUBE_FACES.Right, color, array);
-            }                                                         
-            if (frontBorder)                                                
-            {                                                         
-                PushVertex(new Vector3(gx, gy, gz), 3, CUBE_FACES.Front, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 6, CUBE_FACES.Front, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 2, CUBE_FACES.Front, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 3, CUBE_FACES.Front, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 7, CUBE_FACES.Front, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 6, CUBE_FACES.Back, color, array);
-            }                                                            
-            if (backBorder)                                                    
-            {                                                            
-                PushVertex(new Vector3(gx, gy, gz), 0, CUBE_FACES.Back, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 1, CUBE_FACES.Back, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 5, CUBE_FACES.Back, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 5, CUBE_FACES.Back, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 4, CUBE_FACES.Back, color, array);
-                PushVertex(new Vector3(gx, gy, gz), 0, CUBE_FACES.Back, color, array);
+            {
+                //PushQuad(gp, new Vector4(1, 2, 0), color, array);
+                PushTriangle(gp, new Vector3(1, 3, 2), color);
+                PushTriangle(gp, new Vector3(1, 0, 3), color);
+            }                                                  
+            if (leftBorder)                                          
+            {
+                PushTriangle(gp, new Vector3(0, 7, 3), color);
+                PushTriangle(gp, new Vector3(0, 4, 7), color);
+            }                                               
+            if (rightBorder)                                    
+            {
+                PushTriangle(gp, new Vector3(2, 5, 1), color);
+                PushTriangle(gp, new Vector3(2, 6, 5), color);
+            }                                                  
+            if (frontBorder)                                         
+            {
+                PushTriangle(gp, new Vector3(3, 6, 2), color);
+                PushTriangle(gp, new Vector3(3, 7, 6), color);
+            }                                                     
+            if (backBorder)                                             
+            {
+                PushTriangle(gp, new Vector3(0, 1, 5), color);
+                PushTriangle(gp, new Vector3(5, 4, 0), color);
             }
 
         }
 
-        private static void PushVertex(Vector3 position, int vertex, CUBE_FACES face, Color color, List<VertexPositionColor> array)
+        private static int VertexAO(int side1, int side2, int corner)
         {
-            if (face != CUBE_FACES.Top)
+            if (side1 == 1 && side2 == 1)
             {
-                if(face == CUBE_FACES.Right)
-                    color = Color.Lerp(color, Color.Black, 0.25f);
-                else if(face == CUBE_FACES.Left)
-                    color = Color.Lerp(color, Color.Black, 0.33f);
-                else if(face == CUBE_FACES.Front)
-                    color = Color.Lerp(color, Color.Black, 0.15f);
-                else if (face == CUBE_FACES.Back)
-                    color = Color.Lerp(color, Color.Black, 0.10f);
+                return 0;
+            }
+            return (side1 + side2 + corner);
+        }
+
+        private static void PushTriangle(Vector3 position, Vector3 vertices, Color color)
+        {
+            var entry = new VertexPositionColor(position + CUBE_VERTICES[(int)vertices.X], color);
+            CurrentArray.Add(entry);
+            entry = new VertexPositionColor(position + CUBE_VERTICES[(int)vertices.Y], color);
+            CurrentArray.Add(entry);
+            entry = new VertexPositionColor(position + CUBE_VERTICES[(int)vertices.Z], color);
+            CurrentArray.Add(entry);
+        }
+
+        private static void PushQuad(Vector3 position, Vector4 vertices, Color color)
+        {
+            
+            var entry = new VertexPositionColor(position + CUBE_VERTICES[(int)vertices.X], color);
+            CurrentArray.Add(entry);
+            entry = new VertexPositionColor(position + CUBE_VERTICES[(int)vertices.Y], color);
+            CurrentArray.Add(entry);
+            entry = new VertexPositionColor(position + CUBE_VERTICES[(int)vertices.Z], color);
+            CurrentArray.Add(entry);
+
+            entry = new VertexPositionColor(position + CUBE_VERTICES[(int)vertices.Z], color);
+            CurrentArray.Add(entry);
+            entry = new VertexPositionColor(position + CUBE_VERTICES[(int)vertices.Y], color);
+            CurrentArray.Add(entry);
+            entry = new VertexPositionColor(position + CUBE_VERTICES[(int)vertices.W], color);
+            CurrentArray.Add(entry);
+        }
+
+        private static void PushVertex(SubChunk chunk, Vector3 position, int vertex, CUBE_FACES face, Color color)
+        {
+            //if (face != CUBE_FACES.Top)
+            //{
+            //    if(face == CUBE_FACES.Right)
+            //        color = Color.Lerp(color, Color.Black, 0.25f);
+            //    else if(face == CUBE_FACES.Left)
+            //        color = Color.Lerp(color, Color.Black, 0.33f);
+            //    else if(face == CUBE_FACES.Front)
+            //        color = Color.Lerp(color, Color.Black, 0.15f);
+            //    else if (face == CUBE_FACES.Back)
+            //        color = Color.Lerp(color, Color.Black, 0.10f);
+            //}
+           
+            switch (vertex)
+            {
+                case 0: // 0 0
+                    int corner = ChunkManager.GetBlock(position - new Vector3(1, 0, 1)) != Blocks.Air ? 1 : 0;
+                    int left   = ChunkManager.GetBlock(position - new Vector3(1, 0, 0)) != Blocks.Air ? 1 : 0;
+                    int right  = ChunkManager.GetBlock(position - new Vector3(0, 0, 1)) != Blocks.Air ? 1 : 0;
+                    color = Color.Lerp(color, Color.Red, VertexAO(left, right, corner) * 0.25f);
+                    break;
+                case 1: // 1 0
+                    corner = ChunkManager.GetBlock(position - new Vector3(1, 0, 1)) != Blocks.Air ? 1 : 0;
+                    left = ChunkManager.GetBlock(position - new Vector3(1, 0, 0)) != Blocks.Air ? 1 : 0;
+                    right = ChunkManager.GetBlock(position - new Vector3(0, 0, 1)) != Blocks.Air ? 1 : 0;
+                    color = Color.Lerp(color, Color.Red, VertexAO(left, right, corner) * 0.25f);
+                    break;
+                case 2: // 1 1
+                    //corner = ChunkManager.GetBlock(position) != Blocks.Air ? 1 : 0;
+                    //left   = ChunkManager.GetBlock(position) != Blocks.Air ? 1 : 0;
+                    //right  = ChunkManager.GetBlock(position) != Blocks.Air ? 1 : 0;
+                    //color = Color.Lerp(color, Color.Red, VertexAO(left, right, corner) * 0.25f);
+                    break;
+                case 3: // 0 1
+                    //corner = ChunkManager.GetBlock(position - new Vector3(1, 0, 1)) != Blocks.Air ? 1 : 0;
+                    //left = ChunkManager.GetBlock(position - new Vector3(1, 0, 0)) != Blocks.Air ? 1 : 0;
+                    //right = ChunkManager.GetBlock(position - new Vector3(0, 0, 1)) != Blocks.Air ? 1 : 0;
+                    //color = Color.Lerp(color, Color.Red, VertexAO(left, right, corner) * 0.25f);
+                    break;
             }
             
+            
             VertexPositionColor entry = new VertexPositionColor(position + CUBE_VERTICES[vertex], color);
-            array.Add(entry);
+            CurrentArray.Add(entry);
         }
     }
 }

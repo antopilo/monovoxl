@@ -51,6 +51,7 @@ namespace HelloMonoGame
             this.Window.Title = "Voxel engine";
 
             ChunkThread = new Thread(ChunkManager.AsyncUpdate);
+            ChunkThread.Priority = ThreadPriority.Highest;
             ChunkThread.Start();
         }
 

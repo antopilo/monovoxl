@@ -99,6 +99,7 @@ namespace HelloMonoGame.Chunk
 
             IsMeshed = true;
             Changed = false;
+            QueueToRender();
         }
 
         public void Rebuild()
@@ -150,8 +151,8 @@ namespace HelloMonoGame.Chunk
 
         public SubChunk GetSubChunk(int pSubChunkIndex)
         {
-            if (pSubChunkIndex < 16 && pSubChunkIndex >= 0)
-                return subChunks[pSubChunkIndex];
+            //if (pSubChunkIndex < 16 && pSubChunkIndex >= 0)
+            return subChunks[pSubChunkIndex];
 
             throw new ArgumentOutOfRangeException("Index out of range");
         }

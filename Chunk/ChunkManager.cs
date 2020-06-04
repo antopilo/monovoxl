@@ -187,8 +187,9 @@ namespace HelloMonoGame.Chunk
                 if (counter > MAX_CHUNKS_PER_FRAME)
                     return;
 
+                
                 chunk.Mesh();
-                chunk.QueueToRender();
+                
                 counter++;
             }
         }
@@ -242,35 +243,40 @@ namespace HelloMonoGame.Chunk
             return GetBlock((int)pos.X, (int)pos.Y, (int)pos.Z);
         }
 
-        public static Blocks GetBlock(int x, int y, int z)
+        public static Blocks GetBlock(int gx, int gy, int gz)
         {
-            Vector2 chunkPosition = new Vector2(x / 16, (int)z / 16);
-            Vector3 localPosition = new Vector3(x - (chunkPosition.X * 16),
-                                                y,
-                                                z - (chunkPosition.Y * 16));
+            // Chunk position
+            int cx = gx / 16;
+            int cz = gz / 16;
 
-            if (localPosition.Y > 255 || localPosition.Y < 0)
+            // Local position
+            int lx = gx - (cx * 16);
+            int ly = gy;
+            int lz = gz - (cz * 16);
+
+            if (ly > 255 || ly < 0)
                 return Blocks.Air;
 
-            if (x < 0)
+            if (gx < 0)
             {
-                if (x % 16 != 0)
-                    chunkPosition.X = x / 16 - 1;
+                if (gx % 16 != 0)
+                    cx = gx / 16 - 1;
 
-                localPosition.X = x - (16 * chunkPosition.X);
+                lx = gx - (16 * cx);
             }
-            if (z < 0)
+            if (gz < 0)
             {
-                if (z % 16 != 0)
-                    chunkPosition.Y = z / 16 - 1;
+                if (gz % 16 != 0)
+                    cz = gz / 16 - 1;
 
-                localPosition.Z = z - (16 * chunkPosition.Y);
+                lz= gz - (16 * cz);
             }
 
-            if (IsChunkLoaded(chunkPosition))
+            Vector2 cv = new Vector2(cx, cz);
+            if (IsChunkLoaded(new Vector2(cx, cz)))
             {
-                Chunk chunk = LoadedChunks[chunkPosition];
-                return chunk.GetBlock(localPosition);
+                Chunk chunk = LoadedChunks[cv];
+                return chunk.GetBlock(lx, ly, lz);
             }
             return Blocks.Air;
         }

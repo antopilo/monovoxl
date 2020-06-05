@@ -42,7 +42,7 @@ public static class BlockManager
         if (type == Blocks.Dirt)
             return Color.Lerp(Color.SandyBrown, Color.RosyBrown, TemperatureMap.GetSimplexFractal(gx, gz));
         if (type == Blocks.Grass)
-            return Color.Lerp(Color.GreenYellow, Color.Yellow, TemperatureMap.GetSimplexFractal(gx, gz));
+            return Color.GreenYellow;
         if (type == Blocks.Stone)
             return Color.SlateGray;
 

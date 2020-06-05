@@ -39,13 +39,12 @@ namespace HelloMonoGame.Chunk
 
         private static Random rng = new Random();
         
-        private static List<VertexPositionColor> CurrentArray;
         public static VertexPositionColor[] Mesh(SubChunk chunk)
         {
             if (chunk.GetCount() == 0)
                 return new VertexPositionColor[] { };
 
-            CurrentArray = new List<VertexPositionColor>();
+            List<VertexPositionColor> CurrentArray = new List<VertexPositionColor>();
             for (int x = 0; x < 16; x++)
             {
                 for (int y = 0; y < 16; y++)
@@ -56,17 +55,18 @@ namespace HelloMonoGame.Chunk
                         if (type == Blocks.Air)
                             continue;
 
-                        CreateBlock(x, y, z, chunk, type);
+                        CreateBlock(x, y, z, chunk, type, CurrentArray);
                     }
                 }
             }
             return CurrentArray.ToArray();
         }
 
-        private static void CreateBlock(int x, int y, int z, SubChunk chunk, Blocks type)
+        private static void CreateBlock(int x, int y, int z, SubChunk chunk, Blocks type, List<VertexPositionColor> CurrentArray)
         {
-            var gp = new Vector3(chunk.Parent.Position.X + x, 16 * chunk.Index + y, chunk.Parent.Position.Z + z);
-            int gx = (int)gp.X, gy = (int)gp.Y, gz = (int)gp.Z;
+            int gx = (int)chunk.Parent.Position.X + x;
+            int gy = 16 * chunk.Index + y;
+            int gz = (int)chunk.Parent.Position.Z + z;
 
             bool top, bottom, left, right, front, back;
             top    = y != 15 ? chunk.GetBlock(x, y + 1, z) == Blocks.Air : true;
@@ -80,10 +80,13 @@ namespace HelloMonoGame.Chunk
             if (top && bottom && left && right && front && back)
                 return;
 
+            bool topChunk = true;
+            bool bottomChunk = true;
             bool leftChunk = true;
             bool rightChunk = true;
             bool backChunk = true;
             bool frontChunk = true;
+
             if (x == 0)
                 leftChunk = chunk.Parent.Left.GetSubChunk(chunk.Index).GetBlock(15, y, z) == Blocks.Air;
             if (x == 15)
@@ -93,10 +96,6 @@ namespace HelloMonoGame.Chunk
             if (z == 15)
                 frontChunk = chunk.Parent.Front.GetSubChunk(chunk.Index).GetBlock(x, y, 0) == Blocks.Air;
 
-            // Check if there is a block in the above subchunk.
-            // Dont check if the subchunk is the bottom or top one.
-            bool topChunk = true;
-            bool bottomChunk = true;
             if (chunk.Index != 15)
             {
                 SubChunk topSubChunk = chunk.GetAboveSubChunk();
@@ -128,28 +127,27 @@ namespace HelloMonoGame.Chunk
             Color color = BlockManager.GetBlockColor(type, gx, gz);
             if (topBorder)
             {
-                
-                PushQuad(CUBE_FACES.Top, gx, gy, gz, 4, 5, 6, 7, false, color);
+                PushQuadAO(CUBE_FACES.Top, gx, gy, gz, 4, 5, 6, 7, false, color, CurrentArray);
             }                                                          
             if (bottomBorder)                                                
             {
-                PushQuad(CUBE_FACES.Bottom, gx, gy, gz, 3, 2, 1, 0, false, color);
+                PushQuadAO(CUBE_FACES.Bottom, gx, gy, gz, 3, 2, 1, 0, false, color, CurrentArray);
             }                                                  
             if (leftBorder)                                          
             {
-                PushQuad(CUBE_FACES.Left, gx, gy, gz, 0, 4, 7, 3, false, Color.Lerp(color, Color.Black, 0.1f));
+                PushQuadAO(CUBE_FACES.Left, gx, gy, gz, 0, 4, 7, 3, false, Color.Lerp(color, Color.Black, 0.1f), CurrentArray);
             }                                               
             if (rightBorder)                                    
             {
-                PushQuad(CUBE_FACES.Right, gx, gy, gz, 1, 2, 6, 5, false, Color.Lerp(color, Color.Black, 0.15f));
+                PushQuadAO(CUBE_FACES.Right, gx, gy, gz, 1, 2, 6, 5, false, Color.Lerp(color, Color.Black, 0.15f), CurrentArray);
             }                                                  
             if (frontBorder)                                         
             {
-                PushQuad(CUBE_FACES.Front, gx, gy, gz, 2, 3, 7, 6, false, Color.Lerp(color, Color.Black, 0.1f));
+                PushQuadAO(CUBE_FACES.Front, gx, gy, gz, 2, 3, 7, 6, false, Color.Lerp(color, Color.Black, 0.1f), CurrentArray);
             }                                                     
             if (backBorder)                                             
             {
-                PushQuad(CUBE_FACES.Back, gx, gy, gz, 5, 4, 0, 1, false, Color.Lerp(color, Color.Black, 0.15f));
+                PushQuadAO(CUBE_FACES.Back, gx, gy, gz, 5, 4, 0, 1, false, Color.Lerp(color, Color.Black, 0.15f), CurrentArray);
             }
 
         }
@@ -292,7 +290,7 @@ namespace HelloMonoGame.Chunk
             return 0;
         }
 
-        private static void PushTriangle(int px, int py, int pz, int v1, int v2, int v3, Color color)
+        private static void PushTriangle(int px, int py, int pz, int v1, int v2, int v3, Color color, List<VertexPositionColor> CurrentArray)
         {
             Vector3 position = new Vector3(px, py, pz);
             var entry = new VertexPositionColor(position + CUBE_VERTICES[v1], color);
@@ -303,7 +301,23 @@ namespace HelloMonoGame.Chunk
             CurrentArray.Add(entry);
         }
 
-        private static void PushTriangleAO(int px, int py, int pz, int v1, int v2, int v3, Color color, float a1, float a2, float a3)
+        public static List<VertexPositionColor> GetCubeMesh(Color color, Vector3 position)
+        {
+            int x = (int)position.X;
+            int y = (int)position.Y;
+            int z = (int)position.Z;
+
+            var CurrentArray = new List<VertexPositionColor>();
+            PushQuad( x, y, z, 4, 5, 6, 7, color, CurrentArray);
+            PushQuad( x, y, z, 3, 2, 1, 0, color, CurrentArray);
+            PushQuad( x, y, z, 0, 4, 7, 3, Color.Lerp(color, Color.Black, 0.1f), CurrentArray);
+            PushQuad( x, y, z, 1, 2, 6, 5, Color.Lerp(color, Color.Black, 0.15f), CurrentArray);
+            PushQuad( x, y, z, 2, 3, 7, 6, Color.Lerp(color, Color.Black, 0.1f), CurrentArray);
+            PushQuad( x, y, z, 5, 4, 0, 1, Color.Lerp(color, Color.Black, 0.15f), CurrentArray);
+            return CurrentArray;
+        }
+
+        private static void PushTriangleAO(int px, int py, int pz, int v1, int v2, int v3, Color color, float a1, float a2, float a3, List<VertexPositionColor> CurrentArray)
         {
             Vector3 position = new Vector3(px, py, pz);
             var entry = new VertexPositionColor(position + CUBE_VERTICES[v1], Color.Lerp(color, Color.Black, a1 * .1f));
@@ -314,7 +328,13 @@ namespace HelloMonoGame.Chunk
             CurrentArray.Add(entry);
         }
 
-        private static void PushQuad(CUBE_FACES face, int x, int y, int z, int c1, int c2, int c3, int c4, bool inverted, Color color)
+        private static void PushQuad(int x, int y, int z, int c1, int c2, int c3, int c4, Color color, List<VertexPositionColor> CurrentArray)
+        {
+            PushTriangle(x, y, z, c1, c2, c3, color, CurrentArray);
+            PushTriangle(x, y, z, c1, c3, c4, color, CurrentArray);
+        }
+
+        private static void PushQuadAO(CUBE_FACES face, int x, int y, int z, int c1, int c2, int c3, int c4, bool inverted, Color color, List<VertexPositionColor> CurrentArray)
         {
             // Calculate AO in all corners and decide if inverted or not.
             float a00 = AOLookUp(face, x, y, z, c1);
@@ -324,62 +344,15 @@ namespace HelloMonoGame.Chunk
 
             if (a00 + a11 < a01 + a10)
             {
-                PushTriangleAO(x, y, z, c1, c2, c3, color, a00, a10, a11);
-                PushTriangleAO(x, y, z, c1, c3, c4, color, a00, a11, a01);
+                PushTriangleAO(x, y, z, c1, c2, c3, color, a00, a10, a11, CurrentArray);
+                PushTriangleAO(x, y, z, c1, c3, c4, color, a00, a11, a01, CurrentArray);
             }
             else
             {
-                PushTriangleAO(x, y, z, c1, c2, c4, color, a00, a10, a01);
-                PushTriangleAO(x, y, z, c2, c3, c4, color, a10, a11, a01);
+                PushTriangleAO(x, y, z, c1, c2, c4, color, a00, a10, a01, CurrentArray);
+                PushTriangleAO(x, y, z, c2, c3, c4, color, a10, a11, a01, CurrentArray);
             }
            
-        }
-
-        private static void PushVertex(SubChunk chunk, Vector3 position, int vertex, CUBE_FACES face, Color color)
-        {
-            //if (face != CUBE_FACES.Top)
-            //{
-            //    if(face == CUBE_FACES.Right)
-            //        color = Color.Lerp(color, Color.Black, 0.25f);
-            //    else if(face == CUBE_FACES.Left)
-            //        color = Color.Lerp(color, Color.Black, 0.33f);
-            //    else if(face == CUBE_FACES.Front)
-            //        color = Color.Lerp(color, Color.Black, 0.15f);
-            //    else if (face == CUBE_FACES.Back)
-            //        color = Color.Lerp(color, Color.Black, 0.10f);
-            //}
-           
-            switch (vertex)
-            {
-                case 0: // 0 0
-                    int corner = ChunkManager.GetBlock(position + new Vector3(1, 0, 1)) != Blocks.Air ? 1 : 0;
-                    int left   = ChunkManager.GetBlock(position - new Vector3(1, 0, 0)) != Blocks.Air ? 1 : 0;
-                    int right  = ChunkManager.GetBlock(position - new Vector3(0, 0, 1)) != Blocks.Air ? 1 : 0;
-                    color = Color.Lerp(color, Color.Red, VertexAO(left, right, corner) * 0.25f);
-                    break;
-                case 1: // 1 0
-                    corner = ChunkManager.GetBlock(position - new Vector3(1, 0, 1)) != Blocks.Air ? 1 : 0;
-                    left = ChunkManager.GetBlock(position - new Vector3(1, 0, 0)) != Blocks.Air ? 1 : 0;
-                    right = ChunkManager.GetBlock(position - new Vector3(0, 0, 1)) != Blocks.Air ? 1 : 0;
-                    color = Color.Lerp(color, Color.Red, VertexAO(left, right, corner) * 0.25f);
-                    break;
-                case 2: // 1 1
-                    //corner = ChunkManager.GetBlock(position) != Blocks.Air ? 1 : 0;
-                    //left   = ChunkManager.GetBlock(position) != Blocks.Air ? 1 : 0;
-                    //right  = ChunkManager.GetBlock(position) != Blocks.Air ? 1 : 0;
-                    //color = Color.Lerp(color, Color.Red, VertexAO(left, right, corner) * 0.25f);
-                    break;
-                case 3: // 0 1
-                    //corner = ChunkManager.GetBlock(position - new Vector3(1, 0, 1)) != Blocks.Air ? 1 : 0;
-                    //left = ChunkManager.GetBlock(position - new Vector3(1, 0, 0)) != Blocks.Air ? 1 : 0;
-                    //right = ChunkManager.GetBlock(position - new Vector3(0, 0, 1)) != Blocks.Air ? 1 : 0;
-                    //color = Color.Lerp(color, Color.Red, VertexAO(left, right, corner) * 0.25f);
-                    break;
-            }
-            
-            
-            VertexPositionColor entry = new VertexPositionColor(position + CUBE_VERTICES[vertex], color);
-            CurrentArray.Add(entry);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using HelloMonoGame.Chunk;
 using HelloMonoGame.Entities.Collision;
+using HelloMonoGame.Entities.Particles;
 using HelloMonoGame.Graphics.Debug;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -41,7 +42,7 @@ namespace HelloMonoGame.Entities
         public Vector3 SelectVoxel { get; set; } = new Vector3();
 
         public bool IsFlying = true;
-        public float Height = 6f;
+        public float Height = 2f;
         public Raycast GroundRay;
 
         public Camera(Vector3 Position, Vector3 Target, Vector3 Up)
@@ -140,6 +141,7 @@ namespace HelloMonoGame.Entities
         {
             var speed = 0.25f;
 
+
             // movement
             var keyboard = Keyboard.GetState();
             if (keyboard.IsKeyDown(Keys.W))
@@ -154,6 +156,9 @@ namespace HelloMonoGame.Entities
                 Position += Up * speed;
             if (keyboard.IsKeyDown(Keys.LeftShift))
                 Position -= Up * speed;
+
+            if (keyboard.IsKeyDown(Keys.F))
+                ParticleManager.SpawnCubeParticle(Position, Color.Purple);
         }
 
         private void KeyboardControlGround()

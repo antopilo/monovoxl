@@ -1,5 +1,6 @@
 ﻿using HelloMonoGame.Chunk;
 using HelloMonoGame.Entities;
+using HelloMonoGame.Entities.Particles;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,9 @@ public class Scene
     public static Camera DefaultCamera = new Camera(new Vector3(0, 100, 0), new Vector3(1, 100, 0), Vector3.Up);
 
     public static float DeltaTime = 0f;
-    // Manage chunks
+
+    public static float Gravity = 0.4f;
+
 
        
     
@@ -51,6 +54,8 @@ public class Scene
         {
             entity.Update(delta);
         }
+
+        ParticleManager.Update(delta);
 
         if(DeltaTime > 1)
         {

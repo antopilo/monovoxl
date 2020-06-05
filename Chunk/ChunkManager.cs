@@ -1,5 +1,6 @@
 ﻿using HelloMonoGame.Entities;
 using HelloMonoGame.Entities.Collision;
+using HelloMonoGame.Entities.Particles;
 using HelloMonoGame.Generation;
 using HelloMonoGame.Graphics.Debug;
 using Microsoft.Xna.Framework;
@@ -312,6 +313,9 @@ namespace HelloMonoGame.Chunk
             if (IsChunkLoaded(chunkPosition))
             {
                 Chunk chunk = LoadedChunks[chunkPosition];
+
+                ParticleManager.SpawnCubeParticle(point, Color.Red);
+
                 chunk.RemoveBlock(localPosition);
             }
         }
@@ -380,7 +384,44 @@ namespace HelloMonoGame.Chunk
             return null;
         }
 
+        public static bool IsPointColliding(Vector3 point)
+        {
+            Vector2 chunkPosition = new Vector2((int)point.X / 16, (int)point.Z / 16);
+            Vector3 localPosition = new Vector3((int)point.X - (chunkPosition.X * 16),
+                                                (int)point.Y,
+                                                (int)point.Z - (chunkPosition.Y * 16));
+            // Offset
+            localPosition += new Vector3(0.5f, 0.5f, 0.5f);
 
+            Vector3 chunkPos3 = new Vector3(chunkPosition.X, 0, chunkPosition.Y);
+
+            if (localPosition.Y > 255 || localPosition.Y < 0)
+                return false;
+
+            if (point.X < 0)
+            {
+                if (point.X % 16 != 0)
+                    chunkPosition.X = (int)point.X / 16 - 1;
+
+                localPosition.X = point.X - (16 * chunkPosition.X);
+            }
+            if (point.Z < 0)
+            {
+                if (point.Z % 16 != 0)
+                    chunkPosition.Y = (int)point.Z / 16 - 1;
+
+                localPosition.Z = point.Z - (16 * chunkPosition.Y);
+            }
+
+            if (IsChunkLoaded(chunkPosition))
+            {
+                Chunk chunk = LoadedChunks[chunkPosition];
+
+                // Collision!
+                return chunk.GetBlock(localPosition) != Blocks.Air;
+            }
+            return false;
+        }
         
         public static bool CheckCollision(Vector3 point)
         {

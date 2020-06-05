@@ -62,6 +62,8 @@
     <Compile Include="Entities\Collision\CollisionHelper.cs" />
     <Compile Include="Entities\Collision\ICollidable.cs" />
     <Compile Include="Entities\IEntity.cs" />
+    <Compile Include="Entities\Particles\Particle.cs" />
+    <Compile Include="Entities\Particles\ParticleManager.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Generation\FastNoisecs.cs" />

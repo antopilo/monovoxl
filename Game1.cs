@@ -65,7 +65,7 @@ namespace HelloMonoGame
             if (keyboardState.IsKeyDown(Keys.Escape))
                 Exit();
 
-            CurrentScene.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds);
+            CurrentScene.Update((float)gameTime.ElapsedGameTime.Seconds);
 
            
             base.Update(gameTime);

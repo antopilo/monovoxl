@@ -1,5 +1,6 @@
 ﻿using HelloMonoGame.Chunk;
 using HelloMonoGame.Entities;
+using HelloMonoGame.Entities.Particles;
 using HelloMonoGame.Graphics.Debug;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -21,6 +22,7 @@ namespace HelloMonoGame
 
         // List of renderable object
         public static List<VertexBuffer> RenderList;
+        public static List<Particle> ParticleList;
         public static List<DebugLine> DebugList;
         public static List<DebugHit> DebugHit;
         public static List<DebugBox> DebugBoxes;
@@ -43,6 +45,9 @@ namespace HelloMonoGame
             
             // Render list
             RenderList = new List<VertexBuffer>();
+            ParticleList = new List<Particle>();
+
+            // DEBUG
             DebugList = new List<DebugLine>();
             DebugHit = new List<DebugHit>();
             DebugBoxes = new List<DebugBox>();
@@ -147,6 +152,25 @@ namespace HelloMonoGame
             }
         }
 
+        public static void DrawParticles()
+        {
+            for (int i = 0; i < ParticleList.Count(); i++)
+            {
+                if (ParticleList[i].Mesh.Count < 1)
+                    continue;
+                VertexBuffer vb = new VertexBuffer(Graphics.GraphicsDevice, typeof(VertexPositionColor), ParticleList[i].Mesh.Count(), BufferUsage.WriteOnly);
+                vb.SetData<VertexPositionColor>(ParticleList[i].Mesh.ToArray());
+                Graphics.GraphicsDevice.SetVertexBuffer(vb);
+                Graphics.GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, vb.VertexCount / 3);
+            }
+        }
+
+        public static void AddParticle(Particle p)
+        {
+
+            ParticleList.Add(p);
+        }
+
         public static void AddDebugLine(DebugLine line)
         {
             DebugList.Add(line);
@@ -247,6 +271,8 @@ namespace HelloMonoGame
 
             // Draw everything in the render list.
             DrawMesh();
+
+            DrawParticles();
 
             DrawDebug();
         }

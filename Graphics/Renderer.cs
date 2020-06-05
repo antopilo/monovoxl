@@ -36,7 +36,7 @@ namespace HelloMonoGame
             // Default shader
             DefaultEffect = new BasicEffect(graphics.GraphicsDevice);
             DefaultEffect.VertexColorEnabled = true;
-            //DefaultEffect.FogEnabled = true;
+            DefaultEffect.FogEnabled = true;
             DefaultEffect.FogStart = 16 * ChunkManager.RENDER_DISTANCE - 16;
             DefaultEffect.FogEnd = 16 * ChunkManager.RENDER_DISTANCE - 8;
             DefaultEffect.FogColor = Color.CornflowerBlue.ToVector3();
@@ -136,7 +136,7 @@ namespace HelloMonoGame
 
             DefaultEffect.CurrentTechnique.Passes[0].Apply();
 
-            for (int i = 0; i < RenderList.Count; i++)
+            for (int i = 0; i < RenderList.Count(); i++)
             {
                 if (RenderList[i].VertexCount < 1)
                     continue;

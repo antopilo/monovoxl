@@ -120,7 +120,7 @@ namespace HelloMonoGame.Entities
                 if (ChunkManager.CheckCollision(current) && m.LeftButton == ButtonState.Pressed && pressed == false)
                 {
                     Renderer.AddDebugLine(new DebugLine(startPoint, current, Color.Red));
-                    ChunkManager.RemoveBlock(current);
+
 
                     
                     ChunkManager.RemoveBlock(current);

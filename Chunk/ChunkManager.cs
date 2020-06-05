@@ -18,7 +18,7 @@ namespace HelloMonoGame.Chunk
         // Settings
         public static int MIN_RENDER_DISTANCE = 4;
         public static int MAX_RENDER_DISTANCE = 32;
-        public static int RENDER_DISTANCE = 4;
+        public static int RENDER_DISTANCE = 8;
         private const int MAX_CHUNKS_PER_FRAME = 8;
 
         // Camera used
@@ -80,9 +80,9 @@ namespace HelloMonoGame.Chunk
             CamX = (int)Camera.Position.X / 16;
             CamZ = (int)Camera.Position.Z / 16;
 
-            for (int x =  - RENDER_DISTANCE; x <  + RENDER_DISTANCE; x++)
+            for (int x = CamX - RENDER_DISTANCE; x < CamX + RENDER_DISTANCE; x++)
             {
-                for (int z =  - RENDER_DISTANCE; z <  + RENDER_DISTANCE; z++)
+                for (int z = CamZ - RENDER_DISTANCE; z < CamZ + RENDER_DISTANCE; z++)
                 {
                     if (counter > MAX_CHUNKS_PER_FRAME)
                         return;

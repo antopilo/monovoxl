@@ -37,12 +37,12 @@ namespace HelloMonoGame.Generation
                     int height = (int)(noise * 32f);
                     for (int i = height - 6; i < height; i++)
                     {
-                        if (i == height - 1)
+                        //if (i == height - 1)
                             chunk.AddBlock(x, i, z, Blocks.Grass);
-                        else if (i > height - 5)
-                            chunk.AddBlock(x, i, z, Blocks.Dirt);
-                        else
-                            chunk.AddBlock(x, i, z, Blocks.Stone);
+                        //else if (i > height - 5)
+                        //    chunk.AddBlock(x, i, z, Blocks.Dirt);
+                        //else
+                        //    chunk.AddBlock(x, i, z, Blocks.Stone);
                     }
                     int tempHeight = height;
 

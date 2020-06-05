@@ -122,16 +122,9 @@ namespace HelloMonoGame.Entities
                     Renderer.AddDebugLine(new DebugLine(startPoint, current, Color.Red));
                     ChunkManager.RemoveBlock(current);
 
-                    for (int x = -3; x < 3; x++)
-                    {
-                        for (int y = -3; y < 3; y++)
-                        {
-                            for (int z = -3; z < 3; z++)
-                            {
-                                ChunkManager.RemoveBlock(current + new Vector3(x, y, z));
-                            }
-                        }
-                    }
+                    
+                    ChunkManager.RemoveBlock(current);
+                            
                     pressed = true;
                     return;
                 }

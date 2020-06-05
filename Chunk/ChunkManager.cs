@@ -18,7 +18,7 @@ namespace HelloMonoGame.Chunk
         // Settings
         public static int MIN_RENDER_DISTANCE = 4;
         public static int MAX_RENDER_DISTANCE = 32;
-        public static int RENDER_DISTANCE = 8;
+        public static int RENDER_DISTANCE = 4;
         private const int MAX_CHUNKS_PER_FRAME = 8;
 
         // Camera used
@@ -80,9 +80,9 @@ namespace HelloMonoGame.Chunk
             CamX = (int)Camera.Position.X / 16;
             CamZ = (int)Camera.Position.Z / 16;
 
-            for (int x = CamX - RENDER_DISTANCE; x < CamX + RENDER_DISTANCE; x++)
+            for (int x =  - RENDER_DISTANCE; x <  + RENDER_DISTANCE; x++)
             {
-                for (int z = CamZ - RENDER_DISTANCE; z < CamZ + RENDER_DISTANCE; z++)
+                for (int z =  - RENDER_DISTANCE; z <  + RENDER_DISTANCE; z++)
                 {
                     if (counter > MAX_CHUNKS_PER_FRAME)
                         return;
@@ -243,6 +243,8 @@ namespace HelloMonoGame.Chunk
             return GetBlock((int)pos.X, (int)pos.Y, (int)pos.Z);
         }
 
+        
+
         public static Blocks GetBlock(int gx, int gy, int gz)
         {
             // Chunk position
@@ -272,6 +274,7 @@ namespace HelloMonoGame.Chunk
                 lz= gz - (16 * cz);
             }
 
+            //Renderer.AddDebugBox(new DebugBox(new Vector3(gx + 0.5f, gy + 0.5f, gz + 0.5f), Color.Green));
             Vector2 cv = new Vector2(cx, cz);
             if (IsChunkLoaded(new Vector2(cx, cz)))
             {

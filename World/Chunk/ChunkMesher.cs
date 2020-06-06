@@ -127,14 +127,14 @@ namespace HelloMonoGame.Chunk
                 if (botSubChunk.GetCount() == SubChunk.FULL_COUNT)
                     bottomChunk = false;
                 else
-                    bottomChunk = botSubChunk.GetBlock(x, 15, z) == Blocks.Air;
+                    bottomChunk = botSubChunk.GetBlock(x, SubChunk.HEIGHT - 1, z) == Blocks.Air;
             }
 
             if (!leftChunk && !rightChunk && !backChunk && !frontChunk && !topChunk && !bottomChunk)
                 return;
 
             // False if should not render chunk border faces.
-            bool topBorder    = y == 15 ? topChunk    : top;
+            bool topBorder    = y == SubChunk.HEIGHT - 1 ? topChunk    : top;
             bool bottomBorder = y == 0  ? bottomChunk : bottom;
             bool leftBorder   = x == 0  ? leftChunk   : left;
             bool rightBorder  = x == SubChunk.WIDTH - 1 ? rightChunk  : right;

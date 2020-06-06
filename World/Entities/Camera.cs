@@ -214,9 +214,10 @@ namespace HelloMonoGame.Entities
             }
 
             var kb = Keyboard.GetState();
-            if (kb.IsKeyDown(Keys.C))
-                IsFlying = !IsFlying;
-
+            if (kb.IsKeyDown(Keys.F1))
+                IsFlying = true;
+            if (kb.IsKeyDown(Keys.F2))
+                IsFlying = false;
             if (!IsFlying)
             {
                 GroundRay.Start = Position;
@@ -241,6 +242,7 @@ namespace HelloMonoGame.Entities
             }
             else
             {
+                Velocity = new Vector3();
                 KeyboardControl();
             }
 

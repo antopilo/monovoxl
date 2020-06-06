@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Threading;
 using HelloMonoGame.Chunk;
@@ -18,6 +17,7 @@ namespace HelloMonoGame
 
         private GraphicsDeviceManager graphics;
         public static Game1 Instance;
+
 
         public static Thread ChunkThread;
         public Game1()
@@ -36,7 +36,7 @@ namespace HelloMonoGame
             IsFixedTimeStep = true;
             TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0f / 144);
 
-
+            
         }
 
         protected override void Initialize()
@@ -52,8 +52,10 @@ namespace HelloMonoGame
             base.Initialize();
             this.Window.Title = "Voxel engine";
 
-            ChunkThread = new Thread(ChunkManager.AsyncUpdate);
-            ChunkThread.Priority = ThreadPriority.Highest;
+            ChunkThread = new Thread(ChunkManager.AsyncUpdate)
+            {
+                Priority = ThreadPriority.Highest
+            };
             ChunkThread.Start();
         }
 

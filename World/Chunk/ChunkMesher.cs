@@ -37,9 +37,8 @@ namespace HelloMonoGame.Chunk
             new Vector3(0, 0, 1), new Vector3(0, 0, -1)
         };
 
-        private static Random rng = new Random();
 
-        private static List<TimeSpan> Average = new List<TimeSpan>();
+
         public static VertexPositionColor[] Mesh(SubChunk chunk)
         {
             
@@ -114,7 +113,7 @@ namespace HelloMonoGame.Chunk
             if (z == SubChunk.DEPTH - 1)
                 frontChunk = chunk.Parent.Front.GetSubChunk(chunk.Index).GetBlock(x, y, 0) == Blocks.Air;
 
-            if (chunk.Index != 15)
+            if (chunk.Index != Chunk.HEIGHT - 1)
             {
                 SubChunk topSubChunk = chunk.GetAboveSubChunk();
                 if (topSubChunk.GetCount() == SubChunk.FULL_COUNT)

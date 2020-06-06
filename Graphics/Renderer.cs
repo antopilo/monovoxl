@@ -34,16 +34,18 @@ namespace HelloMonoGame
         {
             Graphics = graphics;
             GraphicsDevice = graphics.GraphicsDevice;
-            
-            // Default shader
-            DefaultEffect = new BasicEffect(graphics.GraphicsDevice);
-            DefaultEffect.VertexColorEnabled = true;
-            //DefaultEffect.FogEnabled = true;
 
-            DefaultEffect.FogStart = 16 * ChunkManager.RENDER_DISTANCE - 16;
-            DefaultEffect.FogEnd = 16 * ChunkManager.RENDER_DISTANCE - 8;
-            DefaultEffect.FogColor = Color.CornflowerBlue.ToVector3();
-            
+            // Default shader
+            DefaultEffect = new BasicEffect(graphics.GraphicsDevice)
+            {
+                VertexColorEnabled = true,
+                //DefaultEffect.FogEnabled = true;
+
+                FogStart = 16 * ChunkManager.RENDER_DISTANCE - 16,
+                FogEnd = 16 * ChunkManager.RENDER_DISTANCE - 8,
+                FogColor = Color.CornflowerBlue.ToVector3()
+            };
+
             // Render list
             RenderList = new List<DynamicVertexBuffer>();
             ParticleList = new List<Particle>();
@@ -124,10 +126,12 @@ namespace HelloMonoGame
 
             if (renderable.Mesh.Length < 1)
                 return;
-            
+
             // add the updated one.
-            var nvb = new DynamicVertexBuffer(Graphics.GraphicsDevice, typeof(VertexPositionColor), renderable.Mesh.Count(), BufferUsage.WriteOnly);
-            nvb.Tag = tag;
+            var nvb = new DynamicVertexBuffer(Graphics.GraphicsDevice, typeof(VertexPositionColor), renderable.Mesh.Count(), BufferUsage.WriteOnly)
+            {
+                Tag = tag
+            };
             nvb.SetData(renderable.Mesh);
 
             RenderList[RenderList.IndexOf(vb)] = nvb;

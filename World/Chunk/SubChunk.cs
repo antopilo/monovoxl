@@ -85,10 +85,13 @@ namespace HelloMonoGame.Chunk
             int x = (int)position.X, y = (int)position.Y, z = (int)position.Z;
             return GetBlock(x, y, z);
         }
+
         public Blocks GetBlock(int i)
         {
             return Blocks.Air;//Data[i];
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Blocks GetBlock(int x, int y, int z)
         {
             return (Blocks)Data[x, y, z];
@@ -100,6 +103,7 @@ namespace HelloMonoGame.Chunk
             int x = (int)position.X, y = (int)position.Y, z = (int)position.Z;
             AddBlock(x, y, z, block);
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddBlock(int x, int y, int z, Blocks block)
         {

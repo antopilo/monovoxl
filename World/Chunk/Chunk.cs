@@ -166,7 +166,7 @@ namespace HelloMonoGame.Chunk
             throw new ArgumentOutOfRangeException("Index out of range");
         }
 
-        public void Update(float delta)
+        public void Update()
         {
             
         }

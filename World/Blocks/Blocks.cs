@@ -22,7 +22,7 @@ public static class BlockManager
     {
         TemperatureMap = new FastNoise(1337);
         TemperatureMap.SetNoiseType(FastNoise.NoiseType.SimplexFractal);
-        TemperatureMap.SetFrequency(0.0025f);
+        TemperatureMap.SetFrequency(0.0015f);
         TemperatureMap.SetFractalType(FastNoise.FractalType.FBM);
         TemperatureMap.SetFractalOctaves(5);
         TemperatureMap.SetFractalLacunarity(2f);
@@ -42,9 +42,9 @@ public static class BlockManager
         if (type == Blocks.Dirt)
             return Color.Lerp(Color.SandyBrown, Color.RosyBrown, TemperatureMap.GetSimplexFractal(gx, gz));
         if (type == Blocks.Grass)
-            return Color.GreenYellow;
+            return Color.Lerp(Color.GreenYellow, Color.Green, TemperatureMap.GetSimplexFractal(gx, gz));
         if (type == Blocks.Stone)
-            return Color.SlateGray;
+            return Color.Lerp(Color.SlateGray, Color.DarkGray,TemperatureMap.GetSimplexFractal(gx, gx,gz));
 
         return Color.SlateGray;
     }

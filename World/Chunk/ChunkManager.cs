@@ -445,15 +445,15 @@ namespace HelloMonoGame.Chunk
 
             if (point.X < 0)
             {
-                if (point.X % 16 != 0)
+                if (point.X % SubChunk.WIDTH != 0)
                     chunkPosition.X = (int)point.X / SubChunk.WIDTH - 1;
 
                 localPosition.X = point.X - (SubChunk.WIDTH * chunkPosition.X);
             }
             if (point.Z < 0)
             {
-                if (point.Z % SubChunk.WIDTH != 0)
-                    chunkPosition.Y = (int)point.Z / SubChunk.WIDTH - 1;
+                if (point.Z % SubChunk.DEPTH != 0)
+                    chunkPosition.Y = (int)point.Z / SubChunk.DEPTH - 1;
 
                 localPosition.Z = point.Z - (SubChunk.WIDTH * chunkPosition.Y);
             }

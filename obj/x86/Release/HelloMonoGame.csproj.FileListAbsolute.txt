@@ -9,3 +9,14 @@ F:\Desktop\monovoxl\obj\x86\Release\HelloMonoGame.csproj.CoreCompileInputs.cache
 F:\Desktop\monovoxl\obj\x86\Release\HelloMonoGame.csproj.CopyComplete
 F:\Desktop\monovoxl\obj\x86\Release\HelloMonoGame.exe
 F:\Desktop\monovoxl\obj\x86\Release\HelloMonoGame.pdb
+F:\Desktop\monovoxl\bin\Windows\x86\Release\cimgui.dll
+F:\Desktop\monovoxl\bin\Windows\x86\Release\ImGui.NET.dll
+F:\Desktop\monovoxl\bin\Windows\x86\Release\MonoGame.ImGui.dll
+F:\Desktop\monovoxl\bin\Windows\x86\Release\System.Buffers.dll
+F:\Desktop\monovoxl\bin\Windows\x86\Release\System.Numerics.Vectors.dll
+F:\Desktop\monovoxl\bin\Windows\x86\Release\System.Runtime.CompilerServices.Unsafe.dll
+F:\Desktop\monovoxl\bin\Windows\x86\Release\ImGui.NET.xml
+F:\Desktop\monovoxl\bin\Windows\x86\Release\MonoGame.ImGui.pdb
+F:\Desktop\monovoxl\bin\Windows\x86\Release\System.Buffers.xml
+F:\Desktop\monovoxl\bin\Windows\x86\Release\System.Numerics.Vectors.xml
+F:\Desktop\monovoxl\bin\Windows\x86\Release\System.Runtime.CompilerServices.Unsafe.xml

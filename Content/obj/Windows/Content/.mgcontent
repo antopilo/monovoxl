@@ -4,7 +4,7 @@
   <Platform>Windows</Platform>
   <Config />
   <SourceFiles>
-    <File>F:/Desktop/xna/Content/Arial.spritefont</File>
+    <File>F:/Desktop/monovoxl/Content/Arial.spritefont</File>
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />

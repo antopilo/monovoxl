@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Threading;
 using HelloMonoGame.Chunk;
+using HelloMonoGame.Graphics.UI;
 
 namespace HelloMonoGame
 {
@@ -43,6 +44,7 @@ namespace HelloMonoGame
             this.IsMouseVisible = false;
             Renderer.Initialize(graphics);
             BlockManager.Initialize();
+            InterfaceManager.Initialize(this);
             CurrentScene.Initialize();
 
             Mouse.SetPosition((int)Resolution.X / 2, (int)Resolution.Y / 2);
@@ -74,11 +76,14 @@ namespace HelloMonoGame
 
         protected override void Draw(GameTime gameTime)
         {
-
+            //InterfaceManager.RenderLayout(gameTime);
+            base.Draw(gameTime);
             Renderer.Draw(gameTime);
 
+            
+
             this.Window.Title = "Voxel engine - " + (1 / gameTime.ElapsedGameTime.TotalSeconds);
-            base.Draw(gameTime);
+            
         }
 
         public static void ResetMousePosition()

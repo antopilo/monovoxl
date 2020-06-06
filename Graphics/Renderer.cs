@@ -38,7 +38,8 @@ namespace HelloMonoGame
             // Default shader
             DefaultEffect = new BasicEffect(graphics.GraphicsDevice);
             DefaultEffect.VertexColorEnabled = true;
-            DefaultEffect.FogEnabled = true;
+            //DefaultEffect.FogEnabled = true;
+
             DefaultEffect.FogStart = 16 * ChunkManager.RENDER_DISTANCE - 16;
             DefaultEffect.FogEnd = 16 * ChunkManager.RENDER_DISTANCE - 8;
             DefaultEffect.FogColor = Color.CornflowerBlue.ToVector3();
@@ -273,12 +274,16 @@ namespace HelloMonoGame
             // Clear the screen.
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            
+
             // Draw everything in the render list.
             DrawMesh();
 
             DrawParticles();
 
             DrawDebug();
+
+            HelloMonoGame.Graphics.UI.InterfaceManager.RenderLayout(gameTime);
         }
     }
 }

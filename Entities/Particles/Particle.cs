@@ -35,7 +35,7 @@ namespace HelloMonoGame.Entities.Particles
             
         }
 
-        public void Update(float delta)
+        public void Update(GameTime gameTime)
         {
             if (ChunkManager.IsPointColliding(Position))
             {
@@ -49,9 +49,9 @@ namespace HelloMonoGame.Entities.Particles
                 OldDistance = Position;
             }
 
-            Velocity.Y -= Scene.Gravity * 0.05f;
+            Velocity.Y -= Scene.Gravity * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            Position += Velocity * 0.05f;
+            Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
         }
     }

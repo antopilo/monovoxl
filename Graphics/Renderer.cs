@@ -21,7 +21,7 @@ namespace HelloMonoGame
         private static BasicEffect DefaultEffect;
 
         // List of renderable object
-        public static List<VertexBuffer> RenderList;
+        public static List<DynamicVertexBuffer> RenderList;
         public static List<Particle> ParticleList;
         public static List<DebugLine> DebugList;
         public static List<DebugHit> DebugHit;
@@ -44,7 +44,7 @@ namespace HelloMonoGame
             DefaultEffect.FogColor = Color.CornflowerBlue.ToVector3();
             
             // Render list
-            RenderList = new List<VertexBuffer>();
+            RenderList = new List<DynamicVertexBuffer>();
             ParticleList = new List<Particle>();
 
             // DEBUG
@@ -68,7 +68,7 @@ namespace HelloMonoGame
             if (renderable.Mesh.Length <= 0)
                 return;
 
-            var vb = new VertexBuffer(Graphics.GraphicsDevice, typeof(VertexPositionColor), renderable.Mesh.Count(), BufferUsage.WriteOnly);
+            var vb = new DynamicVertexBuffer(Graphics.GraphicsDevice, typeof(VertexPositionColor), renderable.Mesh.Count(), BufferUsage.WriteOnly);
 
             // Set Tag for updating.
             if(renderable is SubChunk)
@@ -93,7 +93,7 @@ namespace HelloMonoGame
             Vector3 tag = new Vector3(c.ChunkPosition.X, ((SubChunk)renderable).Index, c.ChunkPosition.Y);
 
             // Find buffer to udpate
-            VertexBuffer vb = RenderList.SingleOrDefault(b => b.Tag != null && (Vector3)b.Tag == tag);
+            DynamicVertexBuffer vb = RenderList.SingleOrDefault(b => b.Tag != null && (Vector3)b.Tag == tag);
 
             // Check if not null
             if (vb is null)
@@ -115,14 +115,17 @@ namespace HelloMonoGame
             Vector3 tag = new Vector3(c.ChunkPosition.X, ((SubChunk)renderable).Index, c.ChunkPosition.Y);
 
             // Find buffer to udpate
-            VertexBuffer vb = RenderList.SingleOrDefault(b => b.Tag != null && (Vector3)b.Tag == tag);
+            DynamicVertexBuffer vb = RenderList.SingleOrDefault(b => b.Tag != null && (Vector3)b.Tag == tag);
 
             // Check if not null
             if (vb is null)
                 return;
+
+            if (renderable.Mesh.Length < 1)
+                return;
             
             // add the updated one.
-            var nvb = new VertexBuffer(Graphics.GraphicsDevice, typeof(VertexPositionColor), renderable.Mesh.Count(), BufferUsage.WriteOnly);
+            var nvb = new DynamicVertexBuffer(Graphics.GraphicsDevice, typeof(VertexPositionColor), renderable.Mesh.Count(), BufferUsage.WriteOnly);
             nvb.Tag = tag;
             nvb.SetData(renderable.Mesh);
 
@@ -143,11 +146,12 @@ namespace HelloMonoGame
 
             for (int i = 0; i < RenderList.Count(); i++)
             {
-                if (RenderList[i].VertexCount < 1)
+                VertexBuffer vb = RenderList[i];
+                if (vb.VertexCount < 1)
                     continue;
                 
-                Graphics.GraphicsDevice.SetVertexBuffer(RenderList[i]);
-                Graphics.GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, RenderList[i].VertexCount / 3);
+                Graphics.GraphicsDevice.SetVertexBuffer(vb);
+                Graphics.GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, vb.VertexCount / 3);
                 
             }
         }

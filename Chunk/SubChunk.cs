@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,7 +11,11 @@ namespace HelloMonoGame.Chunk
 {
     public class SubChunk : IRenderable
     {
-        public const int FULL_COUNT = 16 * 16 * 16;
+        public const int WIDTH = 64;
+        public const int HEIGHT = 32;
+        public const int DEPTH = 64;
+
+        public const int FULL_COUNT = WIDTH * HEIGHT * DEPTH;
         public const int EMPTY_COUNT = 0;
         
 
@@ -19,7 +24,7 @@ namespace HelloMonoGame.Chunk
         public int Index { get; set; }
 
         // Blocks
-        private Blocks[] Data { get; set; }
+        private byte[,,] Data { get; set; }
         private int m_Count = 0;
 
         // Flags
@@ -30,24 +35,34 @@ namespace HelloMonoGame.Chunk
         // Mesh
         public VertexPositionColor[] Mesh { get; set; }
 
-        public SubChunk(Chunk parent, int i)
+        public SubChunk(Chunk parent)
+        {
+           
+            Parent = parent;
+        }
+
+        public void Initialize(int i)
         {
             Index = i;
-            Parent = parent;
-            Data = new Blocks[FULL_COUNT];
-
+            //Blocks[,,]
+            Data = new byte[WIDTH, HEIGHT, DEPTH];
             // Fill
-            for (int x = 0; x < Chunk.WIDTH; x++)
-                for (int y = 0; y < Chunk.HEIGHT; y++)
-                    for (int z = 0; z < Chunk.DEPTH; z++)
+            //for (int z = 0; z < FULL_COUNT; z++)
+            //{
+            //    
+            //}
+            m_Count = EMPTY_COUNT;
+            for (int z = 0; z < WIDTH; z++)
+                for (int y = 0; y < HEIGHT; y++)
+                    for (int x = 0; x < DEPTH; x++)
                     {
-                        Data[HashCoords(x, y, z)] = Blocks.Air;
-                        m_Count = EMPTY_COUNT;
+                        Data[x, y, z] = (byte)Blocks.Air;
+
                     }
 
             IsSetup = true;
             IsLoaded = true;
-            
+            //Data = dataTemp;
         }
 
         public int GetCount()
@@ -57,12 +72,12 @@ namespace HelloMonoGame.Chunk
 
         public static int HashCoords(int x, int y, int z)
         {
-            return x | (y << 4) | (z << 8);
+            return x | (y << 8) | (z << 16);
         }
 
         private Vector3 DehashCoords(int i)
         {
-            return new Vector3((i & 0xFF), (i >> 4) & 0xFF, (i >> 8) & 0xFF);
+            return new Vector3((i & 0xFF), (i >> 8) & 0xFF, (i >> 16) & 0xFF);
         }
 
         public Blocks GetBlock(Vector3 position) 
@@ -70,9 +85,14 @@ namespace HelloMonoGame.Chunk
             int x = (int)position.X, y = (int)position.Y, z = (int)position.Z;
             return GetBlock(x, y, z);
         }
+        public Blocks GetBlock(int i)
+        {
+            return Blocks.Air;//Data[i];
+        }
         public Blocks GetBlock(int x, int y, int z)
         {
-            return Data[x | (y << 4) | (z << 8)];
+            return (Blocks)Data[x, y, z];
+            //return Data[x | (y << 4) | (z << 8)];
         }
 
         public void AddBlock(Vector3 position, Blocks block) 
@@ -80,9 +100,10 @@ namespace HelloMonoGame.Chunk
             int x = (int)position.X, y = (int)position.Y, z = (int)position.Z;
             AddBlock(x, y, z, block);
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddBlock(int x, int y, int z, Blocks block)
         {
-            Data[HashCoords(x, y, z)] = block;
+            Data[x, y, z] = (byte)block;
 
             // TODO: Check previous block before reducing count.
             if (block != Blocks.Air)
@@ -100,7 +121,7 @@ namespace HelloMonoGame.Chunk
         public void RemoveBlock(int x, int y, int z)
         {
             // TODO: Check previous block before reducing count.
-            Data[HashCoords(x, y, z)] = Blocks.Air;
+            Data[x, y, z] = (byte)Blocks.Air;
             m_Count--;
 
             if (x == 0)
@@ -108,7 +129,7 @@ namespace HelloMonoGame.Chunk
                 Parent.Left.Changed = true;
                 Parent.Left.subChunks[Index].NeedRebuild = true;
             }
-            else if (x == 15)
+            else if (x == WIDTH)
             {
                 Parent.Right.Changed = true;
                 Parent.Right.subChunks[Index].NeedRebuild = true;
@@ -118,7 +139,7 @@ namespace HelloMonoGame.Chunk
                 Parent.Back.Changed = true;
                 Parent.Back.subChunks[Index].NeedRebuild = true;
             }
-            else if (z == 15)
+            else if (z == DEPTH)
             {
                 Parent.Front.Changed = true;
                 Parent.Front.subChunks[Index].NeedRebuild = true;
@@ -127,7 +148,7 @@ namespace HelloMonoGame.Chunk
             {
                 GetUnderSubChunk().NeedRebuild = true;
             }
-            else if (y == 15 && Index < 15)
+            else if (y == HEIGHT && Index < Chunk.HEIGHT - 1)
             {
                 GetAboveSubChunk().NeedRebuild = true;
             }
@@ -138,7 +159,7 @@ namespace HelloMonoGame.Chunk
 
         public SubChunk GetAboveSubChunk()
         {
-            if (Index < 16)
+            if (Index < Chunk.HEIGHT)
                 return Parent.GetSubChunk(Index + 1);
 
             throw new ArgumentOutOfRangeException("No subchunk above.");
@@ -150,6 +171,11 @@ namespace HelloMonoGame.Chunk
                 return Parent.GetSubChunk(Index - 1);
 
             throw new ArgumentOutOfRangeException("No subchunk under.");
+        }
+
+        public SubChunk Clone()
+        {
+            return (SubChunk)this.MemberwiseClone();
         }
     }
 }

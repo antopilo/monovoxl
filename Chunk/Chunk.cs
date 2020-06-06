@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,9 +11,8 @@ namespace HelloMonoGame.Chunk
 {
     public class Chunk : IEntity
     {
-        public const int WIDTH = 16;
-        public const int DEPTH = 16;
-        public const int HEIGHT = 16;
+        public const int MAX_BLOCK_HEIGHT = HEIGHT * SubChunk.HEIGHT;
+        public const int HEIGHT = 4;
 
         public bool IsSurrounded = false;
         public bool IsGenerated = false;
@@ -24,17 +24,21 @@ namespace HelloMonoGame.Chunk
         public Vector3 Position { get; set; }
         public Vector3 Rotation { get; set; }
 
-        public SubChunk[] subChunks = new SubChunk[16];
+        public SubChunk[] subChunks = new SubChunk[HEIGHT];
 
         public Chunk(int x, int z)
         {
             ChunkPosition = new Vector2(x, z);
-            Position = new Vector3(16 * ChunkPosition.X, 0, 16 * ChunkPosition.Y);
+            Position = new Vector3(SubChunk.WIDTH * ChunkPosition.X, 0, SubChunk.DEPTH * ChunkPosition.Y);
 
+            
+            
             // Fill with subchunks
             for (int i = 0; i < HEIGHT; i++)
             {
-                subChunks[i] = new SubChunk(this, i);
+                SubChunk sc = new SubChunk(this);
+                subChunks[i] = sc;
+                sc.Initialize(i);
             }
 
 
@@ -43,7 +47,7 @@ namespace HelloMonoGame.Chunk
         public void AddBlock(int x, int y, int z, Blocks type)
         {
             int subChunkIndex = GetSubChunkIdFromHeight(y);
-            int subChunkHeight = y - ((int)16 * (subChunkIndex));
+            int subChunkHeight = y - (SubChunk.HEIGHT * (subChunkIndex));
             var localPosition = new Vector3(x, subChunkHeight, z);
 
             subChunks[subChunkIndex].AddBlock(localPosition, type);
@@ -54,10 +58,11 @@ namespace HelloMonoGame.Chunk
         {
             RemoveBlock((int)position.X, (int)position.Y, (int)position.Z);
         }
+
         public void RemoveBlock(int x, int y, int z)
         {
             int subChunkIndex = GetSubChunkIdFromHeight(y);
-            int subChunkHeight = y - ((int)16 * (subChunkIndex));
+            int subChunkHeight = y - (SubChunk.HEIGHT * (subChunkIndex));
             var localPosition = new Vector3(x, subChunkHeight, z);
 
             subChunks[subChunkIndex].RemoveBlock(localPosition);
@@ -72,7 +77,7 @@ namespace HelloMonoGame.Chunk
         public Blocks GetBlock(int x, int y, int z)
         {
             int subChunkIndex = GetSubChunkIdFromHeight(y);
-            int subChunkHeight = y - ((int)16 * (subChunkIndex));
+            int subChunkHeight = y - (SubChunk.HEIGHT * (subChunkIndex));
             var localPosition = new Vector3(x, subChunkHeight, z);
 
             return subChunks[subChunkIndex].GetBlock(localPosition);
@@ -80,7 +85,7 @@ namespace HelloMonoGame.Chunk
 
         private int GetSubChunkIdFromHeight(int i)
         {
-            return (i / 16);
+            return (i / SubChunk.HEIGHT);
         }
 
         public void QueueToRender()
@@ -91,12 +96,16 @@ namespace HelloMonoGame.Chunk
 
         public void Mesh()
         {
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
             for (int i = 0; i < HEIGHT; i++)
             {
                 SubChunk sc = subChunks[i];
                 sc.Mesh = ChunkMesher.Mesh(sc);
             }
+            //sw.Stop();
 
+            //Console.WriteLine("Chunk mesh took:" + sw.ElapsedMilliseconds);
             IsMeshed = true;
             Changed = false;
             QueueToRender();
@@ -174,6 +183,11 @@ namespace HelloMonoGame.Chunk
                 ChunkManager.IsChunkLoaded(front) && 
                 ChunkManager.IsChunkLoaded(back))
                 IsSurrounded = true;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            throw new NotImplementedException();
         }
 
         #region Other chunks

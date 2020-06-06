@@ -18,9 +18,9 @@ namespace HelloMonoGame.Chunk
     {
         // Settings
         public static int MIN_RENDER_DISTANCE = 4;
-        public static int MAX_RENDER_DISTANCE = 32;
-        public static int RENDER_DISTANCE = 8;
-        private const int MAX_CHUNKS_PER_FRAME = 8;
+        public static int MAX_RENDER_DISTANCE = 8;
+        public static int RENDER_DISTANCE = 6;
+        private const int MAX_CHUNKS_PER_FRAME = 4;
 
         // Camera used
         private static Camera Camera { get; set; }
@@ -28,7 +28,7 @@ namespace HelloMonoGame.Chunk
 
         // Lists
         private static Dictionary<Vector2, Chunk> LoadedChunks { get; set; }
-        private static List<Vector2> CreationQueue { get; set; }
+        private static HashSet<Vector2> CreationQueue { get; set; }
 
         public static int ClosestUnloadedChunk = 16;
 
@@ -38,10 +38,7 @@ namespace HelloMonoGame.Chunk
             Camera = camera;
 
             LoadedChunks = new Dictionary<Vector2, Chunk>();
-            CreationQueue = new List<Vector2>();
-
-            
-            
+            CreationQueue = new HashSet<Vector2>();
         }
 
         public static void AsyncUpdate()
@@ -78,8 +75,8 @@ namespace HelloMonoGame.Chunk
             int counter = 0;
             int cacheDistance = ClosestUnloadedChunk;
             // Chunk position of the camera.
-            CamX = (int)Camera.Position.X / 16;
-            CamZ = (int)Camera.Position.Z / 16;
+            CamX = (int)Camera.Position.X / SubChunk.WIDTH;
+            CamZ = (int)Camera.Position.Z / SubChunk.DEPTH;
 
             for (int x = CamX - RENDER_DISTANCE; x < CamX + RENDER_DISTANCE; x++)
             {
@@ -103,8 +100,9 @@ namespace HelloMonoGame.Chunk
                         {
                             if (RENDER_DISTANCE > 4)
                                 RENDER_DISTANCE -= 1;
+
                             ClosestUnloadedChunk = (int)distance;
-                            Renderer.UpdateFog((ClosestUnloadedChunk - 1) * 16, ClosestUnloadedChunk * 16);
+                            Renderer.UpdateFog((ClosestUnloadedChunk - 1) * SubChunk.WIDTH, ClosestUnloadedChunk * SubChunk.WIDTH);
                         }
 
                         CreationQueue.Add(chunk);
@@ -115,14 +113,13 @@ namespace HelloMonoGame.Chunk
 
             if (cacheDistance == ClosestUnloadedChunk && ClosestUnloadedChunk < RENDER_DISTANCE)
             {
-                if(RENDER_DISTANCE < 32)
+                if (RENDER_DISTANCE < 32)
                 {
                     RENDER_DISTANCE += 1;
                 }
                 ClosestUnloadedChunk += 1;
-                Renderer.UpdateFog((ClosestUnloadedChunk - 2) * 16, (ClosestUnloadedChunk - 1) * 16);
+                Renderer.UpdateFog((ClosestUnloadedChunk - 2) * SubChunk.WIDTH, (ClosestUnloadedChunk - 1) * SubChunk.WIDTH);
             }
-                
         }
 
         private static void UpdateToMesh()
@@ -185,8 +182,8 @@ namespace HelloMonoGame.Chunk
 
             foreach (Chunk chunk in LoadedChunks.Values.Where(c => c.IsSurrounded == true && c.IsMeshed == false).OrderBy( c => Vector3.Distance(c.Position, Camera.Position)))
             {
-                if (counter > MAX_CHUNKS_PER_FRAME)
-                    return;
+                //if (counter > MAX_CHUNKS_PER_FRAME)
+                //    return;
 
                 
                 chunk.Mesh();
@@ -249,72 +246,75 @@ namespace HelloMonoGame.Chunk
         public static Blocks GetBlock(int gx, int gy, int gz)
         {
             // Chunk position
-            int cx = gx / 16;
-            int cz = gz / 16;
+            int cx = gx / SubChunk.WIDTH;
+            int cz = gz / SubChunk.WIDTH;
 
             // Local position
-            int lx = gx - (cx * 16);
+            int lx = gx - (cx * SubChunk.WIDTH);
             int ly = gy;
-            int lz = gz - (cz * 16);
+            int lz = gz - (cz * SubChunk.WIDTH);
 
-            if (ly > 255 || ly < 0)
+            if (ly > Chunk.MAX_BLOCK_HEIGHT - 1 || ly < 0)
                 return Blocks.Air;
 
             if (gx < 0)
             {
-                if (gx % 16 != 0)
-                    cx = gx / 16 - 1;
+                if (gx % SubChunk.WIDTH != 0)
+                    cx = gx / SubChunk.WIDTH - 1;
 
-                lx = gx - (16 * cx);
+                lx = gx - (SubChunk.WIDTH * cx);
             }
             if (gz < 0)
             {
-                if (gz % 16 != 0)
-                    cz = gz / 16 - 1;
+                if (gz % SubChunk.WIDTH != 0)
+                    cz = gz / SubChunk.WIDTH - 1;
 
-                lz= gz - (16 * cz);
+                lz= gz - (SubChunk.WIDTH * cz);
             }
 
             //Renderer.AddDebugBox(new DebugBox(new Vector3(gx + 0.5f, gy + 0.5f, gz + 0.5f), Color.Green));
             Vector2 cv = new Vector2(cx, cz);
-            if (IsChunkLoaded(new Vector2(cx, cz)))
+            try
             {
-                Chunk chunk = LoadedChunks[cv];
-                return chunk.GetBlock(lx, ly, lz);
+                return LoadedChunks[cv].GetBlock(lx, ly, lz);
+            }catch(Exception e)
+            {
+                return Blocks.Air;
             }
-            return Blocks.Air;
+            
+            
         }
 
         public static void RemoveBlock(Vector3 point)
         {
-            Vector2 chunkPosition = new Vector2((int)point.X / 16, (int)point.Z / 16);
-            Vector3 localPosition = new Vector3((int)point.X - (chunkPosition.X * 16),
+            Vector2 chunkPosition = new Vector2((int)point.X / SubChunk.WIDTH, (int)point.Z / SubChunk.DEPTH);
+            Vector3 localPosition = new Vector3((int)point.X - (chunkPosition.X * SubChunk.WIDTH),
                                                 (int)point.Y,
-                                                (int)point.Z - (chunkPosition.Y * 16));
+                                                (int)point.Z - (chunkPosition.Y * SubChunk.DEPTH));
 
-            if (localPosition.Y > 255 || localPosition.Y < 0)
+            if (localPosition.Y > Chunk.MAX_BLOCK_HEIGHT || localPosition.Y < 0)
                 return;
 
             if (point.X < 0)
             {
-                if (point.X % 16 != 0)
-                    chunkPosition.X = (int)point.X / 16 - 1;
+                if (point.X % SubChunk.WIDTH != 0)
+                    chunkPosition.X = (int)point.X / SubChunk.WIDTH - 1;
 
-                localPosition.X = point.X - (16 * chunkPosition.X);
+                localPosition.X = point.X - (SubChunk.WIDTH * chunkPosition.X);
             }
             if (point.Z < 0)
             {
-                if (point.Z % 16 != 0)
-                    chunkPosition.Y = (int)point.Z / 16 - 1;
+                if (point.Z % SubChunk.DEPTH != 0)
+                    chunkPosition.Y = (int)point.Z / SubChunk.DEPTH - 1;
 
-                localPosition.Z = point.Z - (16 * chunkPosition.Y);
+                localPosition.Z = point.Z - (SubChunk.DEPTH * chunkPosition.Y);
             }
 
             if (IsChunkLoaded(chunkPosition))
             {
                 Chunk chunk = LoadedChunks[chunkPosition];
 
-                ParticleManager.SpawnCubeParticle(point, Color.Red);
+                //ParticleManager.SpawnCubeParticle(point, Color.Red);
 
                 chunk.RemoveBlock(localPosition);
             }
@@ -335,32 +335,32 @@ namespace HelloMonoGame.Chunk
             for (int i = 0; i < length * 8; i++)
             {
                 Vector3 point = Vector3.Lerp(startPoint, endPoint, (i / 8f) / (length));
-                Vector2 chunkPosition = new Vector2((int)point.X / 16, (int)point.Z / 16);
-                Vector3 localPosition = new Vector3((int)point.X - (chunkPosition.X * 16),
+                Vector2 chunkPosition = new Vector2((int)point.X / SubChunk.WIDTH, (int)point.Z / SubChunk.DEPTH);
+                Vector3 localPosition = new Vector3((int)point.X - (chunkPosition.X * SubChunk.DEPTH),
                                                     (int)point.Y,
-                                                    (int)point.Z - (chunkPosition.Y * 16));
+                                                    (int)point.Z - (chunkPosition.Y * SubChunk.DEPTH));
 
                 // Offset
                 localPosition += new Vector3(0.5f, 0.5f, 0.5f);
 
                 Vector3 chunkPos3 = new Vector3(chunkPosition.X, 0, chunkPosition.Y);
 
-                if (localPosition.Y > 255 || localPosition.Y < 0)
+                if (localPosition.Y > Chunk.HEIGHT * SubChunk.HEIGHT - 1 || localPosition.Y < 0)
                     return null;
 
                 if (point.X < 0)
                 {
-                    if (point.X % 16 != 0)
-                        chunkPosition.X = (int)point.X / 16 - 1;
+                    if (point.X % SubChunk.WIDTH != 0)
+                        chunkPosition.X = (int)point.X / SubChunk.WIDTH - 1;
 
-                    localPosition.X = point.X - (16 * chunkPosition.X);
+                    localPosition.X = point.X - (SubChunk.WIDTH * chunkPosition.X);
                 }
                 if (point.Z < 0)
                 {
-                    if (point.Z % 16 != 0)
-                        chunkPosition.Y = (int)point.Z / 16 - 1;
+                    if (point.Z % SubChunk.DEPTH != 0)
+                        chunkPosition.Y = (int)point.Z / SubChunk.DEPTH - 1;
 
-                    localPosition.Z = point.Z - (16 * chunkPosition.Y);
+                    localPosition.Z = point.Z - (SubChunk.DEPTH * chunkPosition.Y);
                 }
 
                 if (IsChunkLoaded(chunkPosition))
@@ -374,7 +374,7 @@ namespace HelloMonoGame.Chunk
                         CollisionResult result = new CollisionResult()
                         {
                             GlobalPosition = point,
-                            VoxelPosition = localPosition + (chunkPos3 * 16),
+                            VoxelPosition = localPosition + (chunkPos3 * SubChunk.WIDTH),
                             BlockType = blockType
                         };
                         return result;
@@ -386,10 +386,10 @@ namespace HelloMonoGame.Chunk
 
         public static bool IsPointColliding(Vector3 point)
         {
-            Vector2 chunkPosition = new Vector2((int)point.X / 16, (int)point.Z / 16);
-            Vector3 localPosition = new Vector3((int)point.X - (chunkPosition.X * 16),
+            Vector2 chunkPosition = new Vector2((int)point.X / SubChunk.WIDTH, (int)point.Z / SubChunk.WIDTH);
+            Vector3 localPosition = new Vector3((int)point.X - (chunkPosition.X * SubChunk.WIDTH),
                                                 (int)point.Y,
-                                                (int)point.Z - (chunkPosition.Y * 16));
+                                                (int)point.Z - (chunkPosition.Y * SubChunk.DEPTH));
             // Offset
             localPosition += new Vector3(0.5f, 0.5f, 0.5f);
 
@@ -400,17 +400,17 @@ namespace HelloMonoGame.Chunk
 
             if (point.X < 0)
             {
-                if (point.X % 16 != 0)
-                    chunkPosition.X = (int)point.X / 16 - 1;
+                if (point.X % SubChunk.WIDTH != 0)
+                    chunkPosition.X = (int)point.X / SubChunk.WIDTH - 1;
 
-                localPosition.X = point.X - (16 * chunkPosition.X);
+                localPosition.X = point.X - (SubChunk.WIDTH * chunkPosition.X);
             }
             if (point.Z < 0)
             {
-                if (point.Z % 16 != 0)
-                    chunkPosition.Y = (int)point.Z / 16 - 1;
+                if (point.Z % SubChunk.DEPTH != 0)
+                    chunkPosition.Y = (int)point.Z / SubChunk.DEPTH - 1;
 
-                localPosition.Z = point.Z - (16 * chunkPosition.Y);
+                localPosition.Z = point.Z - (SubChunk.DEPTH * chunkPosition.Y);
             }
 
             if (IsChunkLoaded(chunkPosition))
@@ -426,10 +426,10 @@ namespace HelloMonoGame.Chunk
         public static bool CheckCollision(Vector3 point)
         {
             
-            Vector2 chunkPosition = new Vector2((int)point.X / 16, (int)point.Z / 16);
-            Vector3 localPosition = new Vector3((int)point.X - (chunkPosition.X * 16),
+            Vector2 chunkPosition = new Vector2((int)point.X / SubChunk.WIDTH, (int)point.Z / SubChunk.DEPTH);
+            Vector3 localPosition = new Vector3((int)point.X - (chunkPosition.X * SubChunk.WIDTH),
                                                 (int)point.Y,
-                                                (int)point.Z - (chunkPosition.Y * 16));
+                                                (int)point.Z - (chunkPosition.Y * SubChunk.DEPTH));
 
             // Offset
             localPosition += new Vector3(0.5f, 0.5f, 0.5f);
@@ -440,22 +440,22 @@ namespace HelloMonoGame.Chunk
             var m = Mouse.GetState();
 
 
-            if (localPosition.Y > 255 || localPosition.Y < 0)
+            if (localPosition.Y > Chunk.MAX_BLOCK_HEIGHT - 1 || localPosition.Y < 0)
                 return false;
 
             if (point.X < 0)
             {
                 if (point.X % 16 != 0)
-                    chunkPosition.X = (int)point.X / 16 - 1;
+                    chunkPosition.X = (int)point.X / SubChunk.WIDTH - 1;
 
-                localPosition.X = point.X - (16 * chunkPosition.X);
+                localPosition.X = point.X - (SubChunk.WIDTH * chunkPosition.X);
             }
             if (point.Z < 0)
             {
-                if (point.Z % 16 != 0)
-                    chunkPosition.Y = (int)point.Z / 16 - 1;
+                if (point.Z % SubChunk.WIDTH != 0)
+                    chunkPosition.Y = (int)point.Z / SubChunk.WIDTH - 1;
 
-                localPosition.Z = point.Z - (16 * chunkPosition.Y);
+                localPosition.Z = point.Z - (SubChunk.WIDTH * chunkPosition.Y);
             }
 
             if (IsChunkLoaded(chunkPosition))

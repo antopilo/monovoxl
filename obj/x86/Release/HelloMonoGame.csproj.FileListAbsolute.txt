@@ -1,0 +1,11 @@
+F:\Desktop\monovoxl\bin\Windows\x86\Release\Content\Arial.xnb
+F:\Desktop\monovoxl\bin\Windows\x86\Release\HelloMonoGame.exe.config
+F:\Desktop\monovoxl\bin\Windows\x86\Release\HelloMonoGame.exe
+F:\Desktop\monovoxl\bin\Windows\x86\Release\HelloMonoGame.pdb
+F:\Desktop\monovoxl\bin\Windows\x86\Release\MonoGame.Framework.dll
+F:\Desktop\monovoxl\bin\Windows\x86\Release\MonoGame.Framework.xml
+F:\Desktop\monovoxl\obj\x86\Release\HelloMonoGame.csprojAssemblyReference.cache
+F:\Desktop\monovoxl\obj\x86\Release\HelloMonoGame.csproj.CoreCompileInputs.cache
+F:\Desktop\monovoxl\obj\x86\Release\HelloMonoGame.csproj.CopyComplete
+F:\Desktop\monovoxl\obj\x86\Release\HelloMonoGame.exe
+F:\Desktop\monovoxl\obj\x86\Release\HelloMonoGame.pdb

@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace HelloMonoGame.Entities
 {
-    public class Camera : IEntity
+    public class Camera : IEntity, IUpdateable
     {
         public string Name { get; set; }
         public Vector3 Position { get; set; }
@@ -26,24 +26,29 @@ namespace HelloMonoGame.Entities
         public Vector3 Up { get; set; }
         public Vector3 Right { get; set; }
 
+        public bool First = true;
         private float LastX { get; set; }
         private float LastY { get; set; }
         private float Pitch { get; set; }
         private float Yaw { get; set; }
 
         public Matrix View;
-        public bool First = true;
+        
 
         public float Sensitivity { get; set; } = 0.25f;
         public float MoveSpeed { get; set; } = 0.3f;
-        public float Gravity { get; set; } = 0.02f;
+        public float Gravity { get; set; } = 4f;
+        public Vector3 Velocity { get; set; } = new Vector3();
 
         public bool pressed = false;
         public Vector3 SelectVoxel { get; set; } = new Vector3();
 
-        public bool IsFlying = true;
-        public float Height = 2f;
+        public bool IsFlying = false;
+        public float Height = 1.75f;
         public Raycast GroundRay;
+
+        public event EventHandler<EventArgs> EnabledChanged;
+        public event EventHandler<EventArgs> UpdateOrderChanged;
 
         public Camera(Vector3 Position, Vector3 Target, Vector3 Up)
         {
@@ -61,50 +66,6 @@ namespace HelloMonoGame.Entities
 
 
 
-        public void Update(float delta)
-        {
-            if (Game1.Instance.IsActive)
-            {
-                
-                MouseControl();
-            }
-            else
-            {
-                First = true;
-            }
-
-            var kb = Keyboard.GetState();
-            if (kb.IsKeyDown(Keys.C))
-                IsFlying = !IsFlying;
-
-            if (!IsFlying)
-            {
-                GroundRay.Start = Position;
-                GroundRay.End = Position - new Vector3(0, Height, 0);
-                CollisionResult? result = CollisionHelper.IsCollidingWithWorld(GroundRay);
-                if(result != null)
-                {
-                    if(Position.Y - Height <= result.Value.VoxelPosition.Y)
-                        Position = new Vector3(Position.X, result.Value.GlobalPosition.Y + Height - 0.01f, Position.Z);
-                }
-                else
-                {
-                    Position = Position - new Vector3(0, Gravity * delta, 0);
-                }
-                KeyboardControlGround();
-            }
-            else
-            {
-                KeyboardControl();
-            }
-
-           
-            DestroyRaycast(25f);
-            
-
-            this.Right = Vector3.Normalize(Vector3.Cross(Up, Direction));
-            this.View = Matrix.CreateLookAt(Position, Position + Direction, Up);
-        }
 
         
         private void DestroyRaycast(float length)
@@ -240,6 +201,57 @@ namespace HelloMonoGame.Entities
             throw new NotImplementedException();
         }
 
+        public void Update(GameTime gameTime)
+        {
+            if (Game1.Instance.IsActive)
+            {
+
+                MouseControl();
+            }
+            else
+            {
+                First = true;
+            }
+
+            var kb = Keyboard.GetState();
+            if (kb.IsKeyDown(Keys.C))
+                IsFlying = !IsFlying;
+
+            if (!IsFlying)
+            {
+                GroundRay.Start = Position;
+                GroundRay.End = Position - new Vector3(0, Height, 0);
+                CollisionResult? result = CollisionHelper.IsCollidingWithWorld(GroundRay);
+                if (result != null)
+                {
+                    Position = new Vector3(Position.X, result.Value.GlobalPosition.Y + Height - 0.1f, Position.Z);
+                    Velocity = new Vector3(Velocity.X, 0, Velocity.Z);
+                    if (Position.Y + Height <= result.Value.VoxelPosition.Y)
+                    {
+                        
+                    }
+                        
+                }
+                else
+                {
+                    
+                    Velocity = Velocity - new Vector3(0, Gravity * (float)gameTime.ElapsedGameTime.TotalSeconds, 0);
+                }
+                KeyboardControlGround();
+            }
+            else
+            {
+                KeyboardControl();
+            }
+
+
+            DestroyRaycast(25f);
+
+            Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            this.Right = Vector3.Normalize(Vector3.Cross(Up, Direction));
+            this.View = Matrix.CreateLookAt(Position, Position + Direction, Up);
+        }
+
         public Matrix ProjectionMatrix
         {
             get
@@ -253,5 +265,9 @@ namespace HelloMonoGame.Entities
                     fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
             }
         }
+
+        public bool Enabled => throw new NotImplementedException();
+
+        public int UpdateOrder => throw new NotImplementedException();
     }
 }

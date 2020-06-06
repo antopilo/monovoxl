@@ -45,20 +45,21 @@ public class Scene
         HelloMonoGame.Generation.Generator.Initialize(1337);
     }
 
-    public void Update(float delta)
+    public void Update(GameTime gameTime)
     {
-        DeltaTime += delta;
+
 
         // Update each entities
         foreach (IEntity entity in this.Entities)
         {
-            entity.Update(delta);
+            entity.Update(gameTime);
         }
 
-        ParticleManager.Update(delta);
 
-        if(DeltaTime > 1)
+        ParticleManager.Update(gameTime);
+        if (DeltaTime > 0.2f)
         {
+            
             //ChunkManager.Update();
             DeltaTime = 0;
         }

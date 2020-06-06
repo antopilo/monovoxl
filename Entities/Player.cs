@@ -25,7 +25,7 @@ namespace HelloMonoGame.Entities
             throw new NotImplementedException();
         }
 
-        public void Update(float delta)
+        public void Update(GameTime gameTime)
         {
             throw new NotImplementedException();
         }

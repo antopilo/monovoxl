@@ -19,11 +19,11 @@ namespace HelloMonoGame.Entities.Particles
             Renderer.AddParticle(p);
         }
 
-        public static void Update(float delta)
+        public static void Update(GameTime gameTime)
         {
             foreach (var p in Particles)
             {
-                p.Update(delta);
+                p.Update(gameTime);
             }
         }
     }

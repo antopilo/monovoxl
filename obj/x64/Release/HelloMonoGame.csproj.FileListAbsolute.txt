@@ -1,0 +1,1 @@
+F:\Desktop\monovoxl\obj\x64\Release\HelloMonoGame.csproj.CoreCompileInputs.cache

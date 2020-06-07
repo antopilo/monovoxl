@@ -31,10 +31,10 @@ namespace HelloMonoGame
             graphics.PreferredBackBufferHeight = (int)Resolution.Y;
 
             CurrentScene = new Scene("Scene 1");
-
+            //graphics.ToggleFullScreen();
             graphics.SynchronizeWithVerticalRetrace = false;
             IsFixedTimeStep = true;
-            TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0f / 144);
+            TargetElapsedTime = TimeSpan.FromMilliseconds(1);
 
             
         }
@@ -44,19 +44,22 @@ namespace HelloMonoGame
             this.IsMouseVisible = false;
             Renderer.Initialize(graphics);
             BlockManager.Initialize();
-            InterfaceManager.Initialize(this);
+            
             CurrentScene.Initialize();
 
             Mouse.SetPosition((int)Resolution.X / 2, (int)Resolution.Y / 2);
 
             base.Initialize();
             this.Window.Title = "Voxel engine";
+       
 
             ChunkThread = new Thread(ChunkManager.AsyncUpdate)
             {
-                Priority = ThreadPriority.Highest
+                Priority = ThreadPriority.Highest,
+                
             };
             ChunkThread.Start();
+            InterfaceManager.Initialize(this);
         }
 
         protected override void LoadContent() { }
@@ -71,7 +74,7 @@ namespace HelloMonoGame
 
             CurrentScene.Update(gameTime);
 
-           
+            Renderer.Update(gameTime);
             base.Update(gameTime);
 
         }
@@ -81,9 +84,7 @@ namespace HelloMonoGame
             //InterfaceManager.RenderLayout(gameTime);
             base.Draw(gameTime);
             Renderer.Draw(gameTime);
-
-            
-
+            InterfaceManager.RenderLayout(gameTime);
             this.Window.Title = "Voxel engine - " + (1 / gameTime.ElapsedGameTime.TotalSeconds);
             
         }

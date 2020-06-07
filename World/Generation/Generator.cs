@@ -1,4 +1,5 @@
 ﻿using HelloMonoGame.Chunk;
+using HelloMonoGame.World.Generation;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace HelloMonoGame.Generation
             HeightMap.SetNoiseType(FastNoise.NoiseType.SimplexFractal);
             HeightMap.SetFrequency(0.000015f);
             HeightMap.SetFractalType(FastNoise.FractalType.RigidMulti);
-            HeightMap.SetFractalOctaves(5);
+            HeightMap.SetFractalOctaves(3);
             HeightMap.SetFractalLacunarity(2.0f);
             HeightMap.SetFractalGain(0.5f);
 
@@ -34,40 +35,42 @@ namespace HelloMonoGame.Generation
 
         public static void Generate(Chunk.Chunk chunk)
         {
-            for (int x = 0; x < Chunk.SubChunk.WIDTH; x++)
+
+            for (int x = 0; x < Chunk.SubChunk.WIDTH; x ++)
             {
-                for (int z = 0; z < Chunk.SubChunk.DEPTH; z++)
+                for (int z = 0; z < Chunk.SubChunk.DEPTH; z ++)
                 {
                     float noiseHeight = (HeightMap.GetSimplexFractal(x + chunk.Position.X, z + chunk.Position.Z) + 1.0f);
                     float prev = 0;
                     int height = (int)(noiseHeight * 32f);
 
-                    for (int y = height ; y < Chunk.Chunk.HEIGHT * SubChunk.HEIGHT; y++)
-                    {
-                        if (y == height - 1 && y < height)
-                            chunk.AddBlock(x, y, z, Blocks.Grass);
-                        else if (y > height - 5 && y < height)
-                            chunk.AddBlock(x, y, z, Blocks.Dirt);
-
-                        float noiseM = Mountains.GetSimplex(x + chunk.Position.X, y, z + chunk.Position.Z);
-                        noiseM *= (float)Math.Tanh(Mountains.GetPerlin(x + chunk.Position.X, y, z + chunk.Position.Z));
-                        noiseM -= (float)(y - height) / (float)((Chunk.Chunk.HEIGHT * SubChunk.HEIGHT) - height);
-                        if ((noiseM + noiseHeight * 0.25f) > 0)
-                        {
-                            if(y == height || y == height + 1)
-                                chunk.AddBlock(x, y, z, Blocks.Grass);
-                            if (prev - 0.006f > noiseM)
-                                chunk.AddBlock(x, y, z, Blocks.Grass);
-                            else if (prev - 0.003f > noiseM)
-                                chunk.AddBlock(x, y, z, Blocks.Dirt);
-                            else
-                            {
-                                chunk.AddBlock(x, y, z, Blocks.Stone);
-                            }
-                        }
-                            
-                        prev = noiseM;
-                    }
+                    chunk.AddBlock(x, height, z, Blocks.Grass);
+                    //for (int y = Chunk.Chunk.HEIGHT * SubChunk.HEIGHT; y > height; y--)
+                    //{
+                    //    if (y == height)
+                    //        chunk.AddBlock(x, y, z, Blocks.Grass);
+                    //    else if (y > height - 5 && y < height)
+                    //        chunk.AddBlock(x, y, z, Blocks.Dirt);
+                    //
+                    //    float noiseM = Mountains.GetSimplex(x + chunk.Position.X, y, z + chunk.Position.Z);
+                    //    noiseM *= (float)Math.Tanh(Mountains.GetPerlin(x + chunk.Position.X, y, z + chunk.Position.Z));
+                    //    noiseM -= (float)(y - height) / (float)((Chunk.Chunk.HEIGHT * SubChunk.HEIGHT) - height);
+                    //    if ((noiseM + noiseHeight * 0.25f) > 0)
+                    //    {
+                    //        if(y == height || y == height + 1)
+                    //            chunk.AddBlock(x, y, z, Blocks.Grass);
+                    //        if (prev - 0.006f > noiseM)
+                    //            chunk.AddBlock(x, y, z, Blocks.Grass);
+                    //        else if (prev - 0.003f > noiseM)
+                    //            chunk.AddBlock(x, y, z, Blocks.Dirt);
+                    //        else
+                    //        {
+                    //            chunk.AddBlock(x, y, z, Blocks.Stone);
+                    //        }
+                    //    }
+                    //        
+                    //    prev = noiseM;
+                    //}
 
                 }
             }

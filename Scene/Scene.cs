@@ -1,6 +1,7 @@
 ﻿using HelloMonoGame.Chunk;
 using HelloMonoGame.Entities;
 using HelloMonoGame.Entities.Particles;
+using HelloMonoGame.Graphics.UI;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ public class Scene
 
     // Current camera
     public Camera CurrentCamera { get; set; }
-    public static Camera DefaultCamera = new Camera(new Vector3(0, 100, 0), new Vector3(1, 100, 0), Vector3.Up);
+    public static Camera DefaultCamera = new Camera(new Vector3(1, 100, 0), new Vector3(2, 100, 0), Vector3.Up);
 
     public static float DeltaTime = 0f;
 
@@ -57,6 +58,8 @@ public class Scene
 
 
         ParticleManager.Update(gameTime);
+        InputManager.Update();
+
         if (DeltaTime > 0.2f)
         {
             

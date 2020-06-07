@@ -52,6 +52,7 @@
     <OutputPath>bin\x64\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Graphics\UI\InputManager.cs" />
     <Compile Include="Graphics\UI\InterfaceManager.cs" />
     <Compile Include="World\Blocks\Blocks.cs" />
     <Compile Include="World\Chunk\Chunk.cs" />
@@ -77,22 +78,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Graphics\Renderer.cs" />
     <Compile Include="Scene\Scene.cs" />
+    <Compile Include="World\Generation\PerlinNoise.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="EmptyKeys.UserInterface, Version=3.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\EmptyKeysUI_MonoGame.3.2.0\lib\netstandard2.0\EmptyKeys.UserInterface.dll</HintPath>
-    </Reference>
-    <Reference Include="EmptyKeys.UserInterface.Core, Version=3.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\EmptyKeysUI_MonoGame.3.2.0\lib\netstandard2.0\EmptyKeys.UserInterface.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="EmptyKeys.UserInterface.Debug, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\EmptyKeysUI_MonoGame.3.2.0\lib\netstandard2.0\EmptyKeys.UserInterface.Debug.dll</HintPath>
-    </Reference>
-    <Reference Include="EmptyKeys.UserInterface.MonoGame, Version=3.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\EmptyKeysUI_MonoGame.3.2.0\lib\netstandard2.0\EmptyKeys.UserInterface.MonoGame.dll</HintPath>
+    <Reference Include="ImGui.NET, Version=1.72.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\ImGui.NET.1.72.0\lib\netstandard2.0\ImGui.NET.dll</HintPath>
     </Reference>
     <Reference Include="MonoGame.Framework, Version=3.8.0.1375, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MonoGame.Framework.DesktopGL.3.8.0.1375-develop\lib\net452\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoGame.ImGui, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Monogame.ImGui.1.0.0\lib\net462\MonoGame.ImGui.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -108,10 +104,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="BehaviorsLicense.txt" />
     <Content Include="Icon.ico" />
-    <Content Include="license.txt" />
-    <Content Include="shaders\DirectionalBlurShader.fx" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
@@ -128,10 +121,10 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\MonoGame.Framework.DesktopGL.3.8.0.1375-develop\build\MonoGame.Framework.DesktopGL.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\MonoGame.Framework.DesktopGL.3.8.0.1375-develop\build\MonoGame.Framework.DesktopGL.targets'))" />
-    <Error Condition="!Exists('packages\ImGui.NET.1.75.0\build\net40\ImGui.NET.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ImGui.NET.1.75.0\build\net40\ImGui.NET.targets'))" />
+    <Error Condition="!Exists('packages\ImGui.NET.1.72.0\build\net40\ImGui.NET.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ImGui.NET.1.72.0\build\net40\ImGui.NET.targets'))" />
   </Target>
   <Import Project="packages\MonoGame.Framework.DesktopGL.3.8.0.1375-develop\build\MonoGame.Framework.DesktopGL.targets" Condition="Exists('packages\MonoGame.Framework.DesktopGL.3.8.0.1375-develop\build\MonoGame.Framework.DesktopGL.targets')" />
-  <Import Project="packages\ImGui.NET.1.75.0\build\net40\ImGui.NET.targets" Condition="Exists('packages\ImGui.NET.1.75.0\build\net40\ImGui.NET.targets')" />
+  <Import Project="packages\ImGui.NET.1.72.0\build\net40\ImGui.NET.targets" Condition="Exists('packages\ImGui.NET.1.72.0\build\net40\ImGui.NET.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

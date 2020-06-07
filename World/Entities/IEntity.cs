@@ -12,12 +12,8 @@ namespace HelloMonoGame.Entities
     {
         string Name { get; set; }
 
-        Vector3 Position { get; set; }
+        //Vector3 Position { get; set; }
         Vector3 Rotation { get; set; }
-
-
-        void SetPosition(int x, int y, int z);
-        void SetPosition(Vector3 positon);
 
         void Update(GameTime gameTime);
     }

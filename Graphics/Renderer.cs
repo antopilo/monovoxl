@@ -27,6 +27,8 @@ namespace HelloMonoGame
         public static List<DebugHit> DebugHit;
         public static List<DebugBox> DebugBoxes;
 
+        private static float TargetFog = 0;
+
         /// <summary>
         /// Initialize
         /// </summary>
@@ -39,7 +41,7 @@ namespace HelloMonoGame
             DefaultEffect = new BasicEffect(graphics.GraphicsDevice)
             {
                 VertexColorEnabled = true,
-                //DefaultEffect.FogEnabled = true;
+                FogEnabled = true,
 
                 FogStart = 16 * ChunkManager.RENDER_DISTANCE - 16,
                 FogEnd = 16 * ChunkManager.RENDER_DISTANCE - 8,
@@ -56,12 +58,16 @@ namespace HelloMonoGame
             DebugBoxes = new List<DebugBox>();
         }
         
-        public static void UpdateFog(float start, float end)
+        public static void UpdateFog(float start)
         {
-            DefaultEffect.FogStart = start;
-            DefaultEffect.FogEnd = end;
+            TargetFog = start;
         }
 
+        public static void Update(GameTime gameTime)
+        {
+            DefaultEffect.FogStart = MathHelper.Lerp(DefaultEffect.FogStart, TargetFog, 0.05f);
+            DefaultEffect.FogEnd = DefaultEffect.FogStart + (SubChunk.WIDTH / 2);
+        }
 
         /// <summary>
         /// Add the renderable entity to the render list.

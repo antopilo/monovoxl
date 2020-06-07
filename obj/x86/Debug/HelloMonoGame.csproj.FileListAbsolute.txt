@@ -40,10 +40,7 @@ F:\Desktop\monovoxl\bin\Windows\x86\Debug\SharpDX.DXGI.xml
 F:\Desktop\monovoxl\bin\Windows\x86\Debug\SharpDX.MediaFoundation.xml
 F:\Desktop\monovoxl\bin\Windows\x86\Debug\SharpDX.XAudio2.xml
 F:\Desktop\monovoxl\obj\x86\Debug\HelloMonoGame.exe.config
-F:\Desktop\monovoxl\bin\Windows\x86\Debug\EmptyKeys.UserInterface.Core.dll
-F:\Desktop\monovoxl\bin\Windows\x86\Debug\EmptyKeys.UserInterface.Debug.dll
-F:\Desktop\monovoxl\bin\Windows\x86\Debug\EmptyKeys.UserInterface.dll
-F:\Desktop\monovoxl\bin\Windows\x86\Debug\EmptyKeys.UserInterface.MonoGame.dll
-F:\Desktop\monovoxl\bin\Windows\x86\Debug\EmptyKeys.UserInterface.xml
-F:\Desktop\monovoxl\bin\Windows\x86\Debug\EmptyKeys.UserInterface.Core.xml
-F:\Desktop\monovoxl\bin\Windows\x86\Debug\EmptyKeys.UserInterface.Debug.pdb
+F:\Desktop\monovoxl\bin\Windows\x86\Debug\ImGui.NET.dll
+F:\Desktop\monovoxl\bin\Windows\x86\Debug\MonoGame.ImGui.dll
+F:\Desktop\monovoxl\bin\Windows\x86\Debug\ImGui.NET.xml
+F:\Desktop\monovoxl\bin\Windows\x86\Debug\MonoGame.ImGui.pdb

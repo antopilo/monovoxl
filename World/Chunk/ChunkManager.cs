@@ -18,7 +18,7 @@ namespace HelloMonoGame.Chunk
     {
         // Settings
         public static int MIN_RENDER_DISTANCE = 4;
-        public static int MAX_RENDER_DISTANCE = 8;
+        public static int MAX_RENDER_DISTANCE = 20;
         public static int RENDER_DISTANCE = 6;
         private const int MAX_CHUNKS_PER_FRAME = 4;
 
@@ -40,6 +40,8 @@ namespace HelloMonoGame.Chunk
             LoadedChunks = new Dictionary<Vector2, Chunk>();
             CreationQueue = new HashSet<Vector2>();
         }
+
+       
 
         public static void AsyncUpdate()
         {
@@ -96,13 +98,13 @@ namespace HelloMonoGame.Chunk
                         if (CreationQueue.Contains(chunk))
                             continue;
 
-                        if (distance < ClosestUnloadedChunk && distance > 2)
+                        if (distance < ClosestUnloadedChunk)
                         {
-                            if (RENDER_DISTANCE > 4)
+                            if (RENDER_DISTANCE > MIN_RENDER_DISTANCE)
                                 RENDER_DISTANCE -= 1;
 
                             ClosestUnloadedChunk = (int)distance;
-                            Renderer.UpdateFog((ClosestUnloadedChunk - 1) * SubChunk.WIDTH, ClosestUnloadedChunk * SubChunk.WIDTH);
+                            Renderer.UpdateFog((ClosestUnloadedChunk - 3) * SubChunk.WIDTH);
                         }
 
                         CreationQueue.Add(chunk);
@@ -111,14 +113,14 @@ namespace HelloMonoGame.Chunk
                 }
             }
 
-            if (cacheDistance == ClosestUnloadedChunk && ClosestUnloadedChunk < RENDER_DISTANCE)
+            if (cacheDistance == ClosestUnloadedChunk)
             {
-                if (RENDER_DISTANCE < 32)
+                if (RENDER_DISTANCE < MAX_RENDER_DISTANCE)
                 {
                     RENDER_DISTANCE += 1;
                 }
-                ClosestUnloadedChunk += 1;
-                Renderer.UpdateFog((ClosestUnloadedChunk - 2) * SubChunk.WIDTH, (ClosestUnloadedChunk - 1) * SubChunk.WIDTH);
+                //ClosestUnloadedChunk += 1;
+                Renderer.UpdateFog((RENDER_DISTANCE - 3) * SubChunk.WIDTH);
             }
         }
 
@@ -180,10 +182,10 @@ namespace HelloMonoGame.Chunk
         {
             int counter = 0;
 
-            foreach (Chunk chunk in LoadedChunks.Values.Where(c => c.IsSurrounded == true && c.IsMeshed == false).OrderBy( c => Vector3.Distance(c.Position, Camera.Position)))
+            foreach (Chunk chunk in LoadedChunks.Values.ToList().Where(c => c.IsSurrounded == true && c.IsMeshed == false))
             {
-                //if (counter > MAX_CHUNKS_PER_FRAME)
-                //    return;
+                if (counter > MAX_CHUNKS_PER_FRAME)
+                    return;
 
                 
                 chunk.Mesh();
@@ -195,7 +197,7 @@ namespace HelloMonoGame.Chunk
         private static void CheckForUnload() 
         {
             int counter = 0;
-            foreach (var item in LoadedChunks.Values.OrderByDescending(c => Vector2.Distance(new Vector2(CamX, CamZ), c.ChunkPosition)))
+            foreach (var item in LoadedChunks.Values.ToList())
             {
                 if(Vector2.Distance(new Vector2(CamX, CamZ), item.ChunkPosition) > MAX_RENDER_DISTANCE)
                 {

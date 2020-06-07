@@ -2,20 +2,15 @@
 using HelloMonoGame.Entities.Collision;
 using HelloMonoGame.Entities.Particles;
 using HelloMonoGame.Graphics.Debug;
+using HelloMonoGame.Graphics.UI;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Input.Touch;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace HelloMonoGame.Entities
 {
-    public class Camera : IEntity, IUpdateable
+    public class Camera : IEntity
     {
         public string Name { get; set; }
         public Vector3 Position { get; set; }
@@ -23,32 +18,37 @@ namespace HelloMonoGame.Entities
 
         public Vector3 Target { get; set; }
         public Vector3 Direction { get; set; }
+        private Vector3 TargetDirection { get; set; }
         public Vector3 Up { get; set; }
         public Vector3 Right { get; set; }
+        public Matrix View;
 
+        #region Mouse
+        public float Sensitivity { get; set; } = 0.25f;
         public bool First = true;
         private float LastX { get; set; }
         private float LastY { get; set; }
         private float Pitch { get; set; }
         private float Yaw { get; set; }
-
-        public Matrix View;
-        
-
-        public float Sensitivity { get; set; } = 0.25f;
-        public float MoveSpeed { get; set; } = 0.3f;
-        public float Gravity { get; set; } = 4f;
-        public Vector3 Velocity { get; set; } = new Vector3();
+        private float Smoothing = 0.1f;
 
         public bool pressed = false;
         public Vector3 SelectVoxel { get; set; } = new Vector3();
+        #endregion
 
-        public bool IsFlying = false;
-        public float Height = 1.75f;
+        #region Movement
+        public const float MAX_SPEED = 25;
+        public const float GRAVITY = 16f;
+        public const float ACCELERATION = 0.3f;
+        public const float DECELERATION = 0.4f;
+        public const float HEIGHT = 1.75f;
+        private Vector2 Input = new Vector2();
+
+        public bool IsFlying = true;
+        public bool IsGrounded = false;
         public Raycast GroundRay;
-
-        public event EventHandler<EventArgs> EnabledChanged;
-        public event EventHandler<EventArgs> UpdateOrderChanged;
+        public Vector3 Velocity = new Vector3();
+        #endregion
 
         public Camera(Vector3 Position, Vector3 Target, Vector3 Up)
         {
@@ -60,89 +60,73 @@ namespace HelloMonoGame.Entities
             this.Up = Vector3.Normalize(Vector3.Cross(this.Direction, this.Right));
 
             this.View = Matrix.CreateLookAt(Position, Target, Up);
-            GroundRay = new Raycast(Position, Position + Vector3.Down * Height);
-
+            GroundRay = new Raycast(Position, Position + Vector3.Down * HEIGHT);
         }
 
-
-
-
-        
-        private void DestroyRaycast(float length)
+        public void Update(GameTime gameTime)
         {
-            var m = Mouse.GetState();
-            Vector3 startPoint = Position;
-            Vector3 endPoint = Position + (Direction * length);
-
-            for (int i = 0; i < length * 4; i++)
+            // If window is focused
+            if (Game1.Instance.IsActive)
             {
-                Vector3 current = Vector3.Lerp(startPoint, endPoint, (i / 4f) / (length));
-
-                // Check collision
-                if (ChunkManager.CheckCollision(current) && m.LeftButton == ButtonState.Pressed && pressed == false)
-                {
-                    Renderer.AddDebugLine(new DebugLine(startPoint, current, Color.Red));
-
-
-                    
-                    ChunkManager.RemoveBlock(current);
-                            
-                    pressed = true;
-                    return;
-                }
-                else if(m.LeftButton == ButtonState.Released && pressed == true)
-                {
-                    pressed = false;
-                }
+                GetInput();
+                MouseControl();
+               
             }
+            else
+            {
+                First = true;
+            }
+            
+            if (InputManager.IsKeyDown(Keys.F1))
+                IsFlying = true;
+            if (InputManager.IsKeyDown(Keys.F2))
+                IsFlying = false;
+
+            KeyboardControl();
+
+            if (!IsFlying)
+            {
+                GroundRay.Start = Position;
+                GroundRay.End = Position - new Vector3(0, HEIGHT, 0);
+                CollisionResult? result = CollisionHelper.IsCollidingWithWorld(GroundRay);
+                IsGrounded = result != null;
+
+                if (IsGrounded)
+                {
+                    Position = Vector3.Lerp(Position, new Vector3(Position.X, result.Value.VoxelPosition.Y + HEIGHT, Position.Z), 0.2f);
+                    Velocity.Y = 0;
+                }
+                    
+                else
+                    Velocity -= GRAVITY * Up * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+
+            Direction = Vector3.Lerp(Direction, TargetDirection, Smoothing);
+
+            DestroyRaycast(25f);
+
+            Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            this.Right = Vector3.Normalize(Vector3.Cross(Up, Direction));
+            this.View = Matrix.CreateLookAt(Position, Position + Direction, Up);
         }
 
+        #region Controls
 
-        private void KeyboardControl()
+        public void GetInput()
         {
-            var speed = 0.25f;
-
-
-            // movement
-            var keyboard = Keyboard.GetState();
-            if (keyboard.IsKeyDown(Keys.W))
-                Position += speed * Direction;
-            if (keyboard.IsKeyDown(Keys.S))
-                Position -= speed * Direction;
-            if (keyboard.IsKeyDown(Keys.A))
-                Position += speed * Right;
-            if (keyboard.IsKeyDown(Keys.D))
-                Position -= speed * Right;
-            if (keyboard.IsKeyDown(Keys.Space))
-                Position += Up * speed;
-            if (keyboard.IsKeyDown(Keys.LeftShift))
-                Position -= Up * speed;
-
-            if (keyboard.IsKeyDown(Keys.F))
-                ParticleManager.SpawnCubeParticle(Position, Color.Purple);
+            if (InputManager.IsKeyDown(Keys.W))
+                Input.Y = 1;
+            else if (InputManager.IsKeyDown(Keys.S))
+                Input.Y = -1;
+            else
+                Input.Y = 0;
+            if (InputManager.IsKeyDown(Keys.A))
+                Input.X = 1;
+            else if (InputManager.IsKeyDown(Keys.D))
+                Input.X = -1;
+            else
+                Input.X = 0;
         }
-
-        private void KeyboardControlGround()
-        {
-            var speed = 0.1f;
-
-            var nd = new Vector3(Direction.X, 0, Direction.Z);
-            // movement
-            var keyboard = Keyboard.GetState();
-            if (keyboard.IsKeyDown(Keys.W))
-                Position += speed * nd;
-            if (keyboard.IsKeyDown(Keys.S))
-                Position -= speed * nd;
-            if (keyboard.IsKeyDown(Keys.A))
-                Position += speed * Right;
-            if (keyboard.IsKeyDown(Keys.D))
-                Position -= speed * Right;
-            if (keyboard.IsKeyDown(Keys.Space))
-                Position += Up * speed;
-            if (keyboard.IsKeyDown(Keys.LeftShift))
-                Position -= Up * speed;
-        }
-
 
         private void MouseControl()
         {
@@ -165,12 +149,13 @@ namespace HelloMonoGame.Entities
                 Pitch = -89;
                 yOffset = 0;
             }
-                
+
             if (Pitch - yOffset > 89)
             {
                 Pitch = 89;
                 yOffset = 0;
             }
+
 
             Yaw += xOffset;
             Pitch -= yOffset;
@@ -178,7 +163,7 @@ namespace HelloMonoGame.Entities
             float radYaw = MathHelper.ToRadians(Yaw);
             float radPitch = MathHelper.ToRadians(Pitch);
 
-            Direction = new Vector3(
+            TargetDirection = new Vector3(
                 (float)(Math.Cos(radYaw) * Math.Cos(radPitch)),
                 (float)Math.Sin(radPitch),
                 (float)(Math.Sin(radYaw) * Math.Cos(radPitch)));
@@ -190,76 +175,89 @@ namespace HelloMonoGame.Entities
             LastY = mouse.Y;
         }
 
-
-        public void SetPosition(int x, int y, int z)
+        private void KeyboardControl()
         {
-            throw new NotImplementedException();
+            if (Input.Y == 1)
+                Velocity += ACCELERATION * Direction;
+            else if (Input.Y == -1)
+                Velocity -= ACCELERATION * Direction;
+
+            if (Input.X == 1)
+                Velocity += ACCELERATION * Right;
+            else if (Input.X == -1)
+                Velocity -= ACCELERATION * Right;
+
+            else if (InputManager.IsKeyDown(Keys.Space))
+                Velocity += Up * ACCELERATION;
+            else if (InputManager.IsKeyDown(Keys.LeftShift))
+                Velocity -= Up * ACCELERATION;
+
+            
+
+            if (Input.Y == 0)
+            {
+                var dir = Direction;
+                dir.Y = 0;
+                var dot = Vector3.Dot(Velocity, Vector3.Normalize(Direction));
+                Velocity -= Math.Sign(dot) * Direction * DECELERATION;
+            }
+
+            if (Input.X == 0)
+            {
+                var dir = Direction;
+                dir.Y = 0;
+                var vel = Velocity;
+                vel.Y = 0;
+                var dot = Vector3.Dot(Velocity, Vector3.Normalize(Right));
+                Velocity -= Math.Sign(dot) * Right * DECELERATION;
+
+            }
+
+            if (Velocity.Length() < 1f && Input.X == 0 && Input.Y == 0)
+                Velocity = new Vector3(0);
+
+            // MaxSpeed
+            if (Velocity.Length() > MAX_SPEED)
+            {
+                Velocity = Vector3.Normalize(Velocity) * MAX_SPEED;
+            }
         }
 
-        public void SetPosition(Vector3 positon)
+        #endregion
+
+        private void DestroyRaycast(float length)
         {
-            throw new NotImplementedException();
-        }
+            var m = Mouse.GetState();
+            Vector3 startPoint = Position;
+            Vector3 endPoint = Position + (Direction * length);
 
-        public void Update(GameTime gameTime)
-        {
-            if (Game1.Instance.IsActive)
+            for (int i = 0; i < length * 4; i++)
             {
+                Vector3 current = Vector3.Lerp(startPoint, endPoint, (i / 4f) / (length));
 
-                MouseControl();
-            }
-            else
-            {
-                First = true;
-            }
-
-            var kb = Keyboard.GetState();
-            if (kb.IsKeyDown(Keys.F1))
-                IsFlying = true;
-            if (kb.IsKeyDown(Keys.F2))
-                IsFlying = false;
-            if (!IsFlying)
-            {
-                GroundRay.Start = Position;
-                GroundRay.End = Position - new Vector3(0, Height, 0);
-                CollisionResult? result = CollisionHelper.IsCollidingWithWorld(GroundRay);
-                if (result != null)
+                // Check collision
+                if (ChunkManager.CheckCollision(current) && m.LeftButton == ButtonState.Pressed && pressed == false)
                 {
-                    Position = new Vector3(Position.X, result.Value.GlobalPosition.Y + Height - 0.1f, Position.Z);
-                    Velocity = new Vector3(Velocity.X, 0, Velocity.Z);
-                    if (Position.Y + Height <= result.Value.VoxelPosition.Y)
-                    {
-                        
-                    }
-                        
+                    Renderer.AddDebugLine(new DebugLine(startPoint, current, Color.Red));
+
+                    ChunkManager.RemoveBlock(current);
+
+                    pressed = true;
+                    return;
                 }
-                else
+                else if (m.LeftButton == ButtonState.Released && pressed == true)
                 {
-                    
-                    Velocity = Velocity - new Vector3(0, Gravity * (float)gameTime.ElapsedGameTime.TotalSeconds, 0);
+                    pressed = false;
                 }
-                KeyboardControlGround();
             }
-            else
-            {
-                Velocity = new Vector3();
-                KeyboardControl();
-            }
-
-
-            DestroyRaycast(25f);
-
-            Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            this.Right = Vector3.Normalize(Vector3.Cross(Up, Direction));
-            this.View = Matrix.CreateLookAt(Position, Position + Direction, Up);
         }
 
         public Matrix ProjectionMatrix
         {
             get
             {
-                float fieldOfView = Microsoft.Xna.Framework.MathHelper.PiOver4;
-                float nearClipPlane = 1;
+                float fieldOfView = 0.90f;
+                float nearClipPlane = 0.1f;
                 float farClipPlane = 20000;
                 float aspectRatio = Renderer.GraphicsDevice.Viewport.Width / (float)Renderer.GraphicsDevice.Viewport.Height;
 
@@ -267,9 +265,5 @@ namespace HelloMonoGame.Entities
                     fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
             }
         }
-
-        public bool Enabled => throw new NotImplementedException();
-
-        public int UpdateOrder => throw new NotImplementedException();
     }
 }

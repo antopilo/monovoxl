@@ -180,66 +180,71 @@ namespace HelloMonoGame.Chunk
 
         private static float AOLookUp(CUBE_FACES face, int x, int y, int z, int vertex)
         {
-            int corner, side1, side2;
+            int corner = 0, side1 = 0, side2 = 0;
             if(face != CUBE_FACES.Top && face != CUBE_FACES.Bottom)
             {
                 if (vertex == 0)
                 {
-                    corner = ChunkManager.GetBlock(x - 1, y  , z - 1) == Blocks.Air ? 0 : 1;
                     side1 = ChunkManager.GetBlock(x, y , z - 1) == Blocks.Air ? 0 : 1;
                     side2 = ChunkManager.GetBlock(x - 1, y, z) == Blocks.Air ? 0 : 1;
-
-                    return VertexAO(side1, side2, corner);
+                    if(side1 == 0 || side2 == 0)
+                        corner = ChunkManager.GetBlock(x - 1, y, z - 1) == Blocks.Air ? 0 : 1;
                 }
                 if (vertex == 1) 
                 {
-                    corner = ChunkManager.GetBlock(x + 1, y , z - 1) == Blocks.Air ? 0 : 1;
+                    
                     side1 = ChunkManager.GetBlock(x + 1, y , z) == Blocks.Air ? 0 : 1;
                     side2 = ChunkManager.GetBlock(x, y, z - 1) == Blocks.Air ? 0 : 1;
-                    return VertexAO(side1, side2, corner);
+                    if (side1 == 0 || side2 == 0)
+                        corner = ChunkManager.GetBlock(x + 1, y, z - 1) == Blocks.Air ? 0 : 1;
                 }
                 if (vertex == 2) 
                 {
-                    corner = ChunkManager.GetBlock(x + 1, y , z + 1) == Blocks.Air ? 0 : 1;
+                    
                     side1 = ChunkManager.GetBlock(x, y , z + 1) == Blocks.Air ? 0 : 1;
                     side2 = ChunkManager.GetBlock(x + 1, y , z) == Blocks.Air ? 0 : 1;
-                    return VertexAO(side1, side2, corner);
+                    if (side1 == 0 || side2 == 0)
+                        corner = ChunkManager.GetBlock(x + 1, y, z + 1) == Blocks.Air ? 0 : 1;
                 }
                 if (vertex == 3)
                 {
-                    corner = ChunkManager.GetBlock(x - 1, y , z + 1) == Blocks.Air ? 0 : 1;
+                    
                     side1 = ChunkManager.GetBlock(x - 1, y , z) == Blocks.Air ? 0 : 1;
                     side2 = ChunkManager.GetBlock(x, y , z + 1) == Blocks.Air ? 0 : 1;
-                    return VertexAO(side1, side2, corner);
+                    if (side1 == 0 || side2 == 0)
+                        corner = ChunkManager.GetBlock(x - 1, y, z + 1) == Blocks.Air ? 0 : 1;
                 }
                 if (vertex == 4)
                 {
-                    corner = ChunkManager.GetBlock(x - 1, y , z - 1) == Blocks.Air ? 0 : 1;
+                    
                     side1 = ChunkManager.GetBlock(x, y , z - 1) == Blocks.Air ? 0 : 1;
                     side2 = ChunkManager.GetBlock(x - 1, y , z) == Blocks.Air ? 0 : 1;
-
-                    return VertexAO(side1, side2, corner);
+                    if (side1 == 0 || side2 == 0)
+                        corner = ChunkManager.GetBlock(x - 1, y, z - 1) == Blocks.Air ? 0 : 1;
                 }
                 if (vertex == 5)
                 {
-                    corner = ChunkManager.GetBlock(x + 1, y, z - 1) == Blocks.Air ? 0 : 1;
+                    
                     side1 = ChunkManager.GetBlock(x + 1, y, z) == Blocks.Air ? 0 : 1;
                     side2 = ChunkManager.GetBlock(x, y, z - 1) == Blocks.Air ? 0 : 1;
-                    return VertexAO(side1, side2, corner);
+                    if (side1 == 0 || side2 == 0)
+                        corner = ChunkManager.GetBlock(x + 1, y, z - 1) == Blocks.Air ? 0 : 1;
                 }
                 if (vertex == 6) 
                 {
-                    corner = ChunkManager.GetBlock(x + 1, y, z + 1) == Blocks.Air ? 0 : 1;
+                    
                     side1 = ChunkManager.GetBlock(x, y , z + 1) == Blocks.Air ? 0 : 1;
                     side2 = ChunkManager.GetBlock(x + 1, y , z) == Blocks.Air ? 0 : 1;
-                    return VertexAO(side1, side2, corner);
+                    if (side1 == 0 || side2 == 0)
+                        corner = ChunkManager.GetBlock(x + 1, y, z + 1) == Blocks.Air ? 0 : 1;
                 }
                 if (vertex == 7)
                 {
-                    corner = ChunkManager.GetBlock(x - 1, y , z + 1) == Blocks.Air ? 0 : 1;
+                   
                     side1 = ChunkManager.GetBlock(x - 1, y , z) == Blocks.Air ? 0 : 1;
                     side2 = ChunkManager.GetBlock(x, y, z + 1) == Blocks.Air ? 0 : 1;
-                    return VertexAO(side1, side2, corner);
+                    if (side1 == 0 || side2 == 0)
+                        corner = ChunkManager.GetBlock(x - 1, y, z + 1) == Blocks.Air ? 0 : 1;
                 }
 
             }
@@ -247,65 +252,69 @@ namespace HelloMonoGame.Chunk
             {
                 if (vertex == 4)
                 {
-
-                    corner = ChunkManager.GetBlock(x - 1, y + 1, z - 1) == Blocks.Air ? 0 : 1;
                     side1 = ChunkManager.GetBlock(x, y + 1, z - 1) == Blocks.Air ? 0 : 1;
                     side2 = ChunkManager.GetBlock(x - 1, y + 1, z) == Blocks.Air ? 0 : 1;
-
-                    return VertexAO(side1, side2, corner);
+                    if (side1 == 0 || side2 == 0)
+                        corner = ChunkManager.GetBlock(x - 1, y + 1, z - 1) == Blocks.Air ? 0 : 1;
                 }
                 if (vertex == 5)
                 {
-                    corner = ChunkManager.GetBlock(x + 1, y + 1, z - 1) == Blocks.Air ? 0 : 1;
+                    
                     side1 = ChunkManager.GetBlock(x + 1, y + 1, z) == Blocks.Air ? 0 : 1;
                     side2 = ChunkManager.GetBlock(x, y + 1, z - 1) == Blocks.Air ? 0 : 1;
-                    return VertexAO(side1, side2, corner);
+                    if (side1 == 0 || side2 == 0)
+                        corner = ChunkManager.GetBlock(x + 1, y + 1, z - 1) == Blocks.Air ? 0 : 1;
                 }
                 if (vertex == 6)
                 {
-                    corner = ChunkManager.GetBlock(x + 1, y + 1, z + 1) == Blocks.Air ? 0 : 1;
+                    
                     side1 = ChunkManager.GetBlock(x, y + 1, z + 1) == Blocks.Air ? 0 : 1;
                     side2 = ChunkManager.GetBlock(x + 1, y + 1, z) == Blocks.Air ? 0 : 1;
-                    return VertexAO(side1, side2, corner);
+                    if (side1 == 0 || side2 == 0)
+                        corner = ChunkManager.GetBlock(x + 1, y + 1, z + 1) == Blocks.Air ? 0 : 1;
                 }
                 if (vertex == 7)
                 {
-                    corner = ChunkManager.GetBlock(x - 1, y + 1, z + 1) == Blocks.Air ? 0 : 1;
+                    
                     side1 = ChunkManager.GetBlock(x - 1, y + 1, z) == Blocks.Air ? 0 : 1;
                     side2 = ChunkManager.GetBlock(x, y + 1, z + 1) == Blocks.Air ? 0 : 1;
-                    return VertexAO(side1, side2, corner);
+                    if (side1 == 0 || side2 == 0)
+                        corner = ChunkManager.GetBlock(x - 1, y + 1, z + 1) == Blocks.Air ? 0 : 1;
                 }
                 if (vertex == 0)
                 {
-                    corner = ChunkManager.GetBlock(x - 1, y - 1, z - 1) == Blocks.Air ? 0 : 1;
+                    
                     side1 = ChunkManager.GetBlock(x, y - 1, z - 1) == Blocks.Air ? 0 : 1;
                     side2 = ChunkManager.GetBlock(x - 1, y - 1, z) == Blocks.Air ? 0 : 1;
-
-                    return VertexAO(side1, side2, corner);
+                    if (side1 == 0 || side2 == 0)
+                        corner = ChunkManager.GetBlock(x - 1, y - 1, z - 1) == Blocks.Air ? 0 : 1;
                 }
                 if (vertex == 1)
                 {
-                    corner = ChunkManager.GetBlock(x + 1, y - 1, z - 1) == Blocks.Air ? 0 : 1;
+                   
                     side1 = ChunkManager.GetBlock(x + 1, y - 1, z) == Blocks.Air ? 0 : 1;
                     side2 = ChunkManager.GetBlock(x, y - 1, z - 1) == Blocks.Air ? 0 : 1;
-                    return VertexAO(side1, side2, corner);
+                    if (side1 == 0 || side2 == 0)
+                        corner = ChunkManager.GetBlock(x + 1, y - 1, z - 1) == Blocks.Air ? 0 : 1;
                 }
                 if (vertex == 2)
                 {
-                    corner = ChunkManager.GetBlock(x + 1, y - 1, z + 1) == Blocks.Air ? 0 : 1;
+                    
                     side1 = ChunkManager.GetBlock(x, y - 1, z + 1) == Blocks.Air ? 0 : 1;
                     side2 = ChunkManager.GetBlock(x + 1, y - 1, z) == Blocks.Air ? 0 : 1;
-                    return VertexAO(side1, side2, corner);
+                    if (side1 == 0 || side2 == 0)
+                        corner = ChunkManager.GetBlock(x + 1, y - 1, z + 1) == Blocks.Air ? 0 : 1;
                 }
                 if (vertex == 3)
                 {
-                    corner = ChunkManager.GetBlock(x - 1, y - 1, z + 1) == Blocks.Air ? 0 : 1;
+                    
                     side1 = ChunkManager.GetBlock(x - 1, y - 1, z) == Blocks.Air ? 0 : 1;
                     side2 = ChunkManager.GetBlock(x, y - 1, z + 1) == Blocks.Air ? 0 : 1;
-                    return VertexAO(side1, side2, corner);
+                    if (side1 == 0 || side2 == 0)
+                        corner = ChunkManager.GetBlock(x - 1, y - 1, z + 1) == Blocks.Air ? 0 : 1;
                 }
             }
-            return 0;
+            return VertexAO(side1, side2, corner); ;
         }
 
         private static void PushTriangle(int px, int py, int pz, int v1, int v2, int v3, Color color, List<VertexPositionColor> CurrentArray)

@@ -77,8 +77,8 @@ namespace HelloMonoGame.Chunk
             int counter = 0;
             int cacheDistance = ClosestUnloadedChunk;
             // Chunk position of the camera.
-            CamX = (int)Camera.Position.X / SubChunk.WIDTH;
-            CamZ = (int)Camera.Position.Z / SubChunk.DEPTH;
+            CamX = (int)(Camera.Position.X  + (Camera.Velocity.X * 10)) / SubChunk.WIDTH;
+            CamZ = (int)(Camera.Position.Z + (Camera.Velocity.Z * 10) )/ SubChunk.DEPTH;
 
             for (int x = CamX - RENDER_DISTANCE; x < CamX + RENDER_DISTANCE; x++)
             {

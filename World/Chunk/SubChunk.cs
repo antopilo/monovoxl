@@ -11,9 +11,9 @@ namespace HelloMonoGame.Chunk
 {
     public class SubChunk : IRenderable
     {
-        public const int WIDTH = 32;
-        public const int HEIGHT = 32;
-        public const int DEPTH = 32;
+        public const int WIDTH = 64;
+        public const int HEIGHT = 64;
+        public const int DEPTH = 64;
 
         public const int FULL_COUNT = WIDTH * HEIGHT * DEPTH;
         public const int EMPTY_COUNT = 0;
@@ -80,6 +80,7 @@ namespace HelloMonoGame.Chunk
             return new Vector3((i & 0xFF), (i >> 8) & 0xFF, (i >> 16) & 0xFF);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Blocks GetBlock(Vector3 position) 
         { 
             int x = (int)position.X, y = (int)position.Y, z = (int)position.Z;

@@ -65,7 +65,7 @@ namespace HelloMonoGame
 
         public static void Update(GameTime gameTime)
         {
-            DefaultEffect.FogStart = MathHelper.Lerp(DefaultEffect.FogStart, TargetFog, 0.05f);
+            DefaultEffect.FogStart = MathHelper.Lerp(DefaultEffect.FogStart, TargetFog, 0.001f);
             DefaultEffect.FogEnd = DefaultEffect.FogStart + (SubChunk.WIDTH / 2);
         }
 

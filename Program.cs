@@ -2,7 +2,7 @@
 
 namespace HelloMonoGame
 {
-#if WINDOWS || LINUX
+//#if WINDOWS || LINUX
     /// <summary>
     /// The main class.
     /// </summary>
@@ -18,5 +18,5 @@ namespace HelloMonoGame
                 game.Run();
         }
     }
-#endif
+//#endif
 }

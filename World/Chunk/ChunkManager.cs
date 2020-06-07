@@ -20,6 +20,7 @@ namespace HelloMonoGame.Chunk
         public static int MIN_RENDER_DISTANCE = 4;
         public static int MAX_RENDER_DISTANCE = 20;
         public static int RENDER_DISTANCE = 6;
+
         private const int MAX_CHUNKS_PER_FRAME = 4;
 
         // Camera used
@@ -276,14 +277,11 @@ namespace HelloMonoGame.Chunk
 
             //Renderer.AddDebugBox(new DebugBox(new Vector3(gx + 0.5f, gy + 0.5f, gz + 0.5f), Color.Green));
             Vector2 cv = new Vector2(cx, cz);
-            try
+            if(LoadedChunks.ContainsKey(cv))
             {
                 return LoadedChunks[cv].GetBlock(lx, ly, lz);
-            }catch(Exception e)
-            {
-                return Blocks.Air;
             }
-            
+            return Blocks.Air;
             
         }
 

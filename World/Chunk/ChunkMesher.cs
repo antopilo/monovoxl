@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -88,6 +89,7 @@ namespace HelloMonoGame.Chunk
             return CurrentArray.ToArray();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void CreateBlock(int x, int y, int z, SubChunk chunk, Blocks type, List<VertexPositionColor> CurrentArray)
         {
             int gx = (int)chunk.Parent.Position.X + x;
@@ -163,6 +165,7 @@ namespace HelloMonoGame.Chunk
 
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int VertexAO(int side1, int side2, int corner)
         {
             if (side1 == 1 && side2 == 1)
@@ -172,6 +175,7 @@ namespace HelloMonoGame.Chunk
             return (side1 + side2 + corner);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static float AOLookUp(CUBE_FACES face, int x, int y, int z, int vertex)
         {
             int corner = 0, side1 = 0, side2 = 0;
@@ -311,12 +315,14 @@ namespace HelloMonoGame.Chunk
             return VertexAO(side1, side2, corner); ;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void PushTriangle(int px, int py, int pz, int v1, int v2, int v3, Color color, List<VertexPositionColor> CurrentArray)
         {
             CurrentArray.Add(new VertexPositionColor(position + CUBE_VERTICES[v1], color));
             CurrentArray.Add(new VertexPositionColor(position + CUBE_VERTICES[v2], color));
             CurrentArray.Add(new VertexPositionColor(position + CUBE_VERTICES[v3], color));
         }
+
 
         public static List<VertexPositionColor> GetCubeMesh(Color color, Vector3 position)
         {
@@ -334,6 +340,7 @@ namespace HelloMonoGame.Chunk
             return CurrentArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void PushTriangleAO(int px, int py, int pz, int v1, int v2, int v3, Color color, float a1, float a2, float a3, List<VertexPositionColor> CurrentArray)
         {
             position = new Vector3(px, py, pz);
@@ -345,12 +352,14 @@ namespace HelloMonoGame.Chunk
             CurrentArray.Add(entry);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void PushQuad(int x, int y, int z, int c1, int c2, int c3, int c4, Color color, List<VertexPositionColor> CurrentArray)
         {
             PushTriangle(x, y, z, c1, c2, c3, color, CurrentArray);
             PushTriangle(x, y, z, c1, c3, c4, color, CurrentArray);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void PushQuadAO(CUBE_FACES face, int x, int y, int z, int c1, int c2, int c3, int c4, Color color, List<VertexPositionColor> CurrentArray)
         {
             // Calculate AO in all corners and decide if inverted or not.

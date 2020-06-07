@@ -12,7 +12,7 @@ namespace HelloMonoGame
     {
         public static Scene CurrentScene;
         public static string WindowTitle;
-        public static Vector2 Resolution = new Vector2(1600, 900);
+        public static Vector2 Resolution = new Vector2(1280, 720);
         public static bool Debug = true;
 
         private GraphicsDeviceManager graphics;

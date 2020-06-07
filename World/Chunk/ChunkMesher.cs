@@ -43,7 +43,7 @@ namespace HelloMonoGame.Chunk
         private static bool back   = false;
         private static bool top    = false;
         private static bool bottom = false;
-
+        private static Vector3 position = new Vector3(0,0,0);
         public static VertexPositionColor[] Mesh(SubChunk chunk)
         {
             
@@ -60,13 +60,14 @@ namespace HelloMonoGame.Chunk
                 {
                     for (int z = 0; z < SubChunk.DEPTH; z++)
                     {
-                        
-
                         type = chunk.GetBlock(x, y, z);
                         if (type == Blocks.Air)
                             continue;
-            
+                        
                         CreateBlock(x, y, z, chunk, type, CurrentArray);
+
+                        if (z > 0)
+                            back = type == Blocks.Air;
                     }
                 }
             }
@@ -95,10 +96,10 @@ namespace HelloMonoGame.Chunk
 
             top    = y != SubChunk.HEIGHT - 1 ? chunk.GetBlock(x, y + 1, z) == Blocks.Air : true;
             bottom = y != 0  ? chunk.GetBlock(x, y - 1, z) == Blocks.Air : true;
-            left   = x != 0  ? chunk.GetBlock(x - 1, y, z) == Blocks.Air : chunk.Parent.Left.GetSubChunk(chunk.Index).GetBlock(SubChunk.DEPTH - 1, y, z) == Blocks.Air; ;
-            right  = x != SubChunk.WIDTH - 1 ? chunk.GetBlock(x + 1, y, z) == Blocks.Air : chunk.Parent.Right.GetSubChunk(chunk.Index).GetBlock(0, y, z) == Blocks.Air; ;
-            front  = z != SubChunk.DEPTH - 1 ? chunk.GetBlock(x, y, z + 1) == Blocks.Air : chunk.Parent.Front.GetSubChunk(chunk.Index).GetBlock(x, y, 0) == Blocks.Air; ;
-            back   = z != 0  ? chunk.GetBlock(x, y, z - 1) == Blocks.Air : chunk.Parent.Back.GetSubChunk(chunk.Index).GetBlock(x, y, SubChunk.DEPTH - 1) == Blocks.Air; ;
+            left   = x != 0  ? chunk.GetBlock(x - 1, y, z) == Blocks.Air : chunk.Parent.Left.GetSubChunk(chunk.Index).GetBlock(SubChunk.DEPTH - 1, y, z) == Blocks.Air;
+            right  = x != SubChunk.WIDTH - 1 ? chunk.GetBlock(x + 1, y, z) == Blocks.Air : chunk.Parent.Right.GetSubChunk(chunk.Index).GetBlock(0, y, z) == Blocks.Air;
+            front  = z != SubChunk.DEPTH - 1 ? chunk.GetBlock(x, y, z + 1) == Blocks.Air : chunk.Parent.Front.GetSubChunk(chunk.Index).GetBlock(x, y, 0) == Blocks.Air;
+            back   = z != 0  ? chunk.GetBlock(x, y, z - 1) == Blocks.Air : chunk.Parent.Back.GetSubChunk(chunk.Index).GetBlock(x, y, SubChunk.DEPTH - 1) == Blocks.Air;
 
             // Block is surrounded
             if (top && bottom && left && right && front && back)
@@ -312,13 +313,9 @@ namespace HelloMonoGame.Chunk
 
         private static void PushTriangle(int px, int py, int pz, int v1, int v2, int v3, Color color, List<VertexPositionColor> CurrentArray)
         {
-            Vector3 position = new Vector3(px, py, pz);
-            var entry = new VertexPositionColor(position + CUBE_VERTICES[v1], color);
-            CurrentArray.Add(entry);
-            entry = new VertexPositionColor(position + CUBE_VERTICES[v2], color);
-            CurrentArray.Add(entry);
-            entry = new VertexPositionColor(position + CUBE_VERTICES[v3], color);
-            CurrentArray.Add(entry);
+            CurrentArray.Add(new VertexPositionColor(position + CUBE_VERTICES[v1], color));
+            CurrentArray.Add(new VertexPositionColor(position + CUBE_VERTICES[v2], color));
+            CurrentArray.Add(new VertexPositionColor(position + CUBE_VERTICES[v3], color));
         }
 
         public static List<VertexPositionColor> GetCubeMesh(Color color, Vector3 position)
@@ -339,7 +336,7 @@ namespace HelloMonoGame.Chunk
 
         private static void PushTriangleAO(int px, int py, int pz, int v1, int v2, int v3, Color color, float a1, float a2, float a3, List<VertexPositionColor> CurrentArray)
         {
-            Vector3 position = new Vector3(px, py, pz);
+            position = new Vector3(px, py, pz);
             var entry = new VertexPositionColor(position + CUBE_VERTICES[v1], Color.Lerp(color, Color.Black, a1 * .05f));
             CurrentArray.Add(entry);
             entry = new VertexPositionColor(position + CUBE_VERTICES[v2], Color.Lerp(color, Color.Black, a2 * .05f));
